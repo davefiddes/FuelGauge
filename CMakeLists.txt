@@ -19,3 +19,6 @@ add_subdirectory (lib)
 
 # The unit tests
 add_subdirectory (test)
+
+# A command line demo of the gauge in operation
+add_subdirectory (demo)
