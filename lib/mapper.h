@@ -22,22 +22,22 @@
 #ifndef MAPPER_H
 #define MAPPER_H
 
-#if defined(__XC)
-    #include <xc.h>         /* XC8 General Include File */
+#if defined( __XC )
+#include <xc.h> /* XC8 General Include File */
 #endif
 
 #include <stdint.h>
 
 #define MAPSIZE 9 // 3-bits + 1
 
-#ifdef __cplusplus  // Provide C++ Compatibility
-    extern "C" {
+#ifdef __cplusplus // Provide C++ Compatibility
+extern "C" {
 #endif
 
-uint16_t MapValue( const uint16_t *map, uint16_t value );
+uint16_t MapValue( const uint16_t* map, uint16_t value );
 
-#ifdef __cplusplus  // Provide C++ Compatibility
-    }
+#ifdef __cplusplus // Provide C++ Compatibility
+}
 #endif
 
 #endif // MAPPER_H

@@ -25,21 +25,21 @@
 //!
 //! \brief  Map a value using the supplied map bins
 //!
-//! Map a 16-bit full-scale value to a 16-bit. The top 3 bits in the value 
+//! Map a 16-bit full-scale value to a 16-bit. The top 3 bits in the value
 //! identify which bins are used to interpolate between.
 //! It is assumed that map is not NULL and has 9 bins
 //!
 ///////////////////////////////////////////////////////////////////////////////
 uint16_t MapValue( const uint16_t* map, uint16_t value )
 {
-    uint8_t lowerBin = value >> 13;
-    uint8_t upperBin = lowerBin + 1;
+    uint8_t  lowerBin = value >> 13;
+    uint8_t  upperBin = lowerBin + 1;
     uint16_t lowerValue = value & 0xE000;
-    
-    uint32_t output = 
-      ( value - lowerValue ) * ( map[upperBin] - map[lowerBin] );
-    
-    output = map[lowerBin] + ( output >> 13 );
-    
-    return (uint16_t)output;    
+
+    uint32_t output =
+        ( value - lowerValue ) * ( map[ upperBin ] - map[ lowerBin ] );
+
+    output = map[ lowerBin ] + ( output >> 13 );
+
+    return (uint16_t)output;
 }
