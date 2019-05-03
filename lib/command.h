@@ -23,6 +23,7 @@
 #define COMMAND_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #if defined( __XC )
 #include <xc.h> /* XC8 General Include File */
@@ -35,6 +36,9 @@ extern "C" {
 bool IsRunning( void );
 
 bool ProcessCommand( const char* command );
+
+void LoadInputMap( const uint16_t* map );
+void LoadOutputMap( const uint16_t* map );
 
 #ifdef __cplusplus // Provide C++ Compatibility
 }

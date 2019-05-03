@@ -21,6 +21,7 @@
 
 #include "command.h"
 #include "hal.h"
+#include "mapper.h"
 
 #include "gtest/gtest.h"
 #include <memory>
@@ -166,4 +167,81 @@ TEST( Command, InputOutput )
     ASSERT_EQ( g_gauge, 0xfedc );
     ASSERT_TRUE( ProcessCommand( "g 123456789" ) );
     ASSERT_EQ( g_gauge, 0x6789 );
+}
+
+const uint16_t LinearOneToOne[ MAPSIZE ] = { 0x0000, 0x2000, 0x4000,
+                                             0x6000, 0x8000, 0xA000,
+                                             0xC000, 0xE000, 0xFFFF };
+
+const uint16_t LinearInverse[ MAPSIZE ] = { 0xFFFF, 0xE000, 0xC000,
+                                            0xA000, 0x8000, 0x6000,
+                                            0x4000, 0x2000, 0x0000 };
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test one shot value mapping - linear input / reverse output map
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, OneShotValueMapping )
+{
+    //
+    // Clear the output log
+    //
+    g_output.clear();
+
+    //
+    // Set the tank input and gauge output to known values
+    //
+    g_tank = 0x1234;
+    g_gauge = 0x5678;
+
+    //
+    // Load some maps
+    //
+    LoadInputMap( LinearOneToOne );
+    LoadOutputMap( LinearInverse );
+
+    //
+    // Try a one-shot mapping
+    //
+    ASSERT_TRUE( ProcessCommand( "t" ) );
+    ASSERT_EQ( g_gauge, 0xedcb );
+    ASSERT_EQ( g_output.size(), 1 );
+    ASSERT_STREQ(
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb\n" );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test one shot value mapping - reverse input / linear output map
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, OneShotValueMappingReverse )
+{
+    //
+    // Clear the output log
+    //
+    g_output.clear();
+
+    //
+    // Set the tank input and gauge output to known values
+    //
+    g_tank = 0x1234;
+    g_gauge = 0x5678;
+
+    //
+    // Load some maps
+    //
+    LoadInputMap( LinearInverse );
+    LoadOutputMap( LinearOneToOne );
+
+    //
+    // Try a one-shot mapping - slightly different from other test due to
+    // distortion in the upper bin of the one to one map
+    //
+    ASSERT_TRUE( ProcessCommand( "t" ) );
+    ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_EQ( g_output.size(), 1 );
+    ASSERT_STREQ(
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0xedcb Gauge: 0xedca\n" );
 }
