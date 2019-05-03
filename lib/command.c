@@ -27,11 +27,6 @@
 #include <string.h>
 
 //
-// Global variables used by the command processor
-//
-bool g_running = true;
-
-//
 // Command grammar:
 //
 //   Command (1 character)
@@ -54,38 +49,19 @@ bool g_running = true;
 //
 
 //
+//! Flag to indicate whether we are running or programming the gauge
+//
+static bool g_running = true;
+
+//
 //! Input mapping between the tank value and a linear actual value
 //
-uint16_t g_inputMap[ MAPSIZE ];
-
-///////////////////////////////////////////////////////////////////////////////
-//!
-//! \brief  Load an input map into operation
-//!
-//! \note This assumes that a map is MAPSIZE and no checking is done
-//!
-///////////////////////////////////////////////////////////////////////////////
-void LoadInputMap( const uint16_t* map )
-{
-    memcpy( &g_inputMap, map, sizeof( g_inputMap ) );
-}
+static uint16_t g_inputMap[ MAPSIZE ];
 
 //
 //! Output mapping between a linear actual value and the guage output
 //
-uint16_t g_outputMap[ MAPSIZE ];
-
-///////////////////////////////////////////////////////////////////////////////
-//!
-//! \brief  Load an output map into operation
-//!
-//! \note This assumes that a map is MAPSIZE and no checking is done
-//!
-///////////////////////////////////////////////////////////////////////////////
-void LoadOutputMap( const uint16_t* map )
-{
-    memcpy( &g_outputMap, map, sizeof( g_outputMap ) );
-}
+static uint16_t g_outputMap[ MAPSIZE ];
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
@@ -150,14 +126,25 @@ static bool ProcessOneShotMapping()
 {
     uint16_t input = HAL_GetTankInput();
 
-    uint16_t actual = MapValue( g_inputMap, input);
+    uint16_t actual = MapValue( g_inputMap, input );
 
-    uint16_t output = MapValue( g_outputMap, actual);
+    uint16_t output = MapValue( g_outputMap, actual );
 
     HAL_SetGaugeOutput( output );
-    HAL_Printf( "Tank: %0#x Actual: %0#x Gauge: %0#x\n", input, actual, output);
+    HAL_Printf(
+        "Tank: %0#x Actual: %0#x Gauge: %0#x\n", input, actual, output );
 
     return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Load our input and output maps
+//!
+///////////////////////////////////////////////////////////////////////////////
+static bool ProcessLoadCommand()
+{
+    return HAL_LoadMaps( g_inputMap, g_outputMap );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -213,7 +200,7 @@ bool ProcessCommand( const char* command )
         /* code */
         break;
     case 'l':
-        /* code */
+        result = ProcessLoadCommand();
         break;
 
     default:

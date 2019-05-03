@@ -33,7 +33,7 @@
 // Dummy HAL used for testing
 //
 
-// Current tank input value
+// 1 Current tank input value
 uint16_t g_tank;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ uint16_t HAL_GetTankInput()
     return g_tank;
 }
 
-// Current gauge output value
+//! Current gauge output value
 uint16_t g_gauge;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ void HAL_SetGaugeOutput( uint16_t value )
     g_gauge = value;
 }
 
-// output buffer used to accumulate lines of character output
+//! output buffer used to accumulate lines of character output
 std::vector< std::string > g_output;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,6 +95,39 @@ void HAL_Printf( const char* format, ... )
 
     // We don't want the '\0' inside the string
     g_output.push_back( std::string( buf.get(), buf.get() + size - 1 ) );
+}
+
+//! A test tank input to linear actual tank value map
+uint16_t g_inputMap[ MAPSIZE ];
+
+//! A test linear actual tank value to gauge output value map
+uint16_t g_outputMap[ MAPSIZE ];
+
+//! Dummy result to return failures
+bool g_result = true;
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Load our test maps into the fuel gauge processor
+//!
+///////////////////////////////////////////////////////////////////////////////
+bool HAL_LoadMaps( uint16_t* input, uint16_t* output )
+{
+    memcpy( input, &g_inputMap, sizeof( g_inputMap ) );
+    memcpy( output, &g_outputMap, sizeof( g_outputMap ) );
+    return g_result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Save the supplied maps into our test maps for checking
+//!
+///////////////////////////////////////////////////////////////////////////////
+bool HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
+{
+    memcpy( &g_inputMap, input, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, output, sizeof( g_outputMap ) );
+    return g_result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -196,10 +229,11 @@ TEST( Command, OneShotValueMapping )
     g_gauge = 0x5678;
 
     //
-    // Load some maps
+    // Cue up some maps and then ask them to be loaded
     //
-    LoadInputMap( LinearOneToOne );
-    LoadOutputMap( LinearInverse );
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+    ASSERT_TRUE( ProcessCommand( "l" ) );
 
     //
     // Try a one-shot mapping
@@ -230,10 +264,11 @@ TEST( Command, OneShotValueMappingReverse )
     g_gauge = 0x5678;
 
     //
-    // Load some maps
+    // Cue up some maps and then ask them to be loaded
     //
-    LoadInputMap( LinearInverse );
-    LoadOutputMap( LinearOneToOne );
+    memcpy( &g_inputMap, LinearInverse, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearOneToOne, sizeof( g_outputMap ) );
+    ASSERT_TRUE( ProcessCommand( "l" ) );
 
     //
     // Try a one-shot mapping - slightly different from other test due to

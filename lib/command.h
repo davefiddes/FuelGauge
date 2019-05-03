@@ -37,9 +37,6 @@ bool IsRunning( void );
 
 bool ProcessCommand( const char* command );
 
-void LoadInputMap( const uint16_t* map );
-void LoadOutputMap( const uint16_t* map );
-
 #ifdef __cplusplus // Provide C++ Compatibility
 }
 #endif
