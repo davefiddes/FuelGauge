@@ -33,7 +33,7 @@
 // Dummy HAL used for testing
 //
 
-// 1 Current tank input value
+//! Current tank input value
 uint16_t g_tank;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,8 +113,11 @@ bool g_result = true;
 ///////////////////////////////////////////////////////////////////////////////
 bool HAL_LoadMaps( uint16_t* input, uint16_t* output )
 {
-    memcpy( input, &g_inputMap, sizeof( g_inputMap ) );
-    memcpy( output, &g_outputMap, sizeof( g_outputMap ) );
+    if ( g_result )
+    {
+        memcpy( input, &g_inputMap, sizeof( g_inputMap ) );
+        memcpy( output, &g_outputMap, sizeof( g_outputMap ) );
+    }
     return g_result;
 }
 
@@ -125,8 +128,11 @@ bool HAL_LoadMaps( uint16_t* input, uint16_t* output )
 ///////////////////////////////////////////////////////////////////////////////
 bool HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
 {
-    memcpy( &g_inputMap, input, sizeof( g_inputMap ) );
-    memcpy( &g_outputMap, output, sizeof( g_outputMap ) );
+    if ( g_result )
+    {
+        memcpy( &g_inputMap, input, sizeof( g_inputMap ) );
+        memcpy( &g_outputMap, output, sizeof( g_outputMap ) );
+    }
     return g_result;
 }
 
@@ -201,6 +207,9 @@ TEST( Command, InputOutput )
     ASSERT_TRUE( ProcessCommand( "g 123456789" ) );
     ASSERT_EQ( g_gauge, 0x6789 );
 }
+
+const uint16_t ZeroMap[ MAPSIZE ] = { 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+                                      0x0000, 0x0000, 0x0000, 0x0000 };
 
 const uint16_t LinearOneToOne[ MAPSIZE ] = { 0x0000, 0x2000, 0x4000,
                                              0x6000, 0x8000, 0xA000,
@@ -279,4 +288,58 @@ TEST( Command, OneShotValueMappingReverse )
     ASSERT_EQ( g_output.size(), 1 );
     ASSERT_STREQ(
         g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0xedcb Gauge: 0xedca\n" );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test the setting of input and output map values
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, MapLoadAndSave )
+{
+    //
+    // Cue up some maps
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+
+    //
+    // Request that loading fails
+    //
+    g_result = false;
+    ASSERT_FALSE( ProcessCommand( "l" ) );
+
+    //
+    // Load in our maps successfully
+    //
+    g_result = true;
+    ASSERT_TRUE( ProcessCommand( "l" ) );
+
+    //
+    // Request the maps to be saved - ensure HAL fails the request
+    //
+    memcpy( &g_inputMap, ZeroMap, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, ZeroMap, sizeof( g_outputMap ) );
+    g_result = false;
+    ASSERT_FALSE( ProcessCommand( "s" ) );
+
+    //
+    // Verify the have not been saved
+    //
+    ASSERT_TRUE( memcmp( g_inputMap, ZeroMap, sizeof( LinearOneToOne ) ) == 0 );
+    ASSERT_TRUE( memcmp( g_outputMap, ZeroMap, sizeof( LinearInverse ) ) == 0 );
+
+    //
+    // Request the maps to be saved - ensure HAL succeeds
+    //
+    g_result = true;
+    ASSERT_TRUE( ProcessCommand( "s" ) );
+
+    //
+    // Verify the maps being saved match those loaded
+    //
+    ASSERT_TRUE(
+        memcmp( g_inputMap, LinearOneToOne, sizeof( LinearOneToOne ) ) == 0 );
+    ASSERT_TRUE(
+        memcmp( g_outputMap, LinearInverse, sizeof( LinearInverse ) ) == 0 );
 }

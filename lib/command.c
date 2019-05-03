@@ -149,6 +149,16 @@ static bool ProcessLoadCommand()
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Save our input and output maps
+//!
+///////////////////////////////////////////////////////////////////////////////
+static bool ProcessSaveCommand()
+{
+    return HAL_SaveMaps( g_inputMap, g_outputMap );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Process a command
 //!
 ///////////////////////////////////////////////////////////////////////////////
@@ -197,7 +207,7 @@ bool ProcessCommand( const char* command )
         /* code */
         break;
     case 's':
-        /* code */
+        result = ProcessSaveCommand();
         break;
     case 'l':
         result = ProcessLoadCommand();
