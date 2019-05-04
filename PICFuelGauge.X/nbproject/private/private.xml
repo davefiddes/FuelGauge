@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mapper.c</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/epwm.c</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/mcc.h</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/main.c</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/tmr2.c</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/pin_manager.h</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/fvr.h</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/epwm.h</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/pin_manager.c</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/eusart.h</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/adc.h</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/adc.c</file>
+            <file>file:/home/dave/projects/fuel-gauge/src/FlashLED.X/mcc_generated_files/eusart.c</file>
+        </group>
+    </open-files>
+</project-private>

@@ -1,3 +1,5 @@
 build/*
 *.gch
 .vscode/ipch/*
+/PICFuelGauge.X/build/
+/PICFuelGauge.X/dist/
