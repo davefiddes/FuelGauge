@@ -56,12 +56,12 @@ static bool g_running = true;
 //
 //! Input mapping between the tank value and a linear actual value
 //
-static uint16_t g_inputMap[ MAPSIZE ];
+static uint16_t s_inputMap[ MAPSIZE ];
 
 //
 //! Output mapping between a linear actual value and the guage output
 //
-static uint16_t g_outputMap[ MAPSIZE ];
+static uint16_t s_outputMap[ MAPSIZE ];
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
@@ -126,9 +126,9 @@ static bool ProcessOneShotMapping()
 {
     uint16_t input = HAL_GetTankInput();
 
-    uint16_t actual = MapValue( g_inputMap, input );
+    uint16_t actual = MapValue( s_inputMap, input );
 
-    uint16_t output = MapValue( g_outputMap, actual );
+    uint16_t output = MapValue( s_outputMap, actual );
 
     HAL_SetGaugeOutput( output );
     HAL_Printf(
@@ -144,7 +144,7 @@ static bool ProcessOneShotMapping()
 ///////////////////////////////////////////////////////////////////////////////
 static bool ProcessLoadCommand()
 {
-    return HAL_LoadMaps( g_inputMap, g_outputMap );
+    return HAL_LoadMaps( s_inputMap, s_outputMap );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -154,7 +154,7 @@ static bool ProcessLoadCommand()
 ///////////////////////////////////////////////////////////////////////////////
 static bool ProcessSaveCommand()
 {
-    return HAL_SaveMaps( g_inputMap, g_outputMap );
+    return HAL_SaveMaps( s_inputMap, s_outputMap );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,12 +166,12 @@ static bool ProcessMapDisplayCommand()
 {
     for ( int i = 0; i < MAPSIZE; i++ )
     {
-        HAL_Printf( "Input[%d] : %0#x\n", i, g_inputMap[ i ] );
+        HAL_Printf( "Input[%d] : %0#x\n", i, s_inputMap[ i ] );
     }
 
     for ( int i = 0; i < MAPSIZE; i++ )
     {
-        HAL_Printf( "Output[%d] : %0#x\n", i, g_outputMap[ i ] );
+        HAL_Printf( "Output[%d] : %0#x\n", i, s_outputMap[ i ] );
     }
 
     return true;
