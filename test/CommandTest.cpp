@@ -326,8 +326,8 @@ TEST( Command, MapLoadAndSave )
     //
     // Verify the have not been saved
     //
-    ASSERT_TRUE( memcmp( g_inputMap, ZeroMap, sizeof( LinearOneToOne ) ) == 0 );
-    ASSERT_TRUE( memcmp( g_outputMap, ZeroMap, sizeof( LinearInverse ) ) == 0 );
+    ASSERT_TRUE( memcmp( g_inputMap, ZeroMap, sizeof( ZeroMap ) ) == 0 );
+    ASSERT_TRUE( memcmp( g_outputMap, ZeroMap, sizeof( ZeroMap ) ) == 0 );
 
     //
     // Request the maps to be saved - ensure HAL succeeds
@@ -393,4 +393,111 @@ TEST( Command, MapDisplay )
     EXPECT_STREQ( g_output[ 16 ].c_str(), "Output[7] : 0x2000\n" );
     EXPECT_STREQ( g_output[ 17 ].c_str(), "Output[8] : 0\n" ); // zero is
                                                                // special
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test the modification of the input map
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, ModifyInputMap )
+{
+    //
+    // Cue up some maps and load them in
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+    g_result = true;
+    ASSERT_TRUE( ProcessCommand( "l" ) );
+
+    //
+    // Try some failed input modification commands
+    //
+    ASSERT_FALSE( ProcessCommand( "i" ) );         // no params
+    ASSERT_FALSE( ProcessCommand( "i 1" ) );       // bin but no value
+    ASSERT_FALSE( ProcessCommand( "i -1 1234" ) ); // invalid bin negative
+    ASSERT_FALSE( ProcessCommand( "i 10 1234" ) ); // invalid bin too large
+    ASSERT_FALSE( ProcessCommand( "i 3 nmkl" ) );  // invalid value
+
+    //
+    // Modify a few bins
+    //
+    ASSERT_TRUE( ProcessCommand( "i 0 1234" ) );
+    ASSERT_TRUE( ProcessCommand( "i 1 5678" ) );
+    ASSERT_TRUE( ProcessCommand( "i 8 cdef" ) );
+
+    //
+    // Request the maps to be saved so we can see the contents
+    //
+    g_result = true;
+    ASSERT_TRUE( ProcessCommand( "s" ) );
+
+    //
+    // Verify the maps have changed as expected
+    //
+    ASSERT_EQ( g_inputMap[ 0 ], 0x1234 );
+    ASSERT_EQ( g_inputMap[ 1 ], 0x5678 );
+    ASSERT_EQ( g_inputMap[ 2 ], 0x4000 ); // unmodified
+    ASSERT_EQ( g_inputMap[ 7 ], 0xe000 ); // unmodified
+    ASSERT_EQ( g_inputMap[ 8 ], 0xcdef );
+
+    //
+    // Sanity check that the output map has not changed at all
+    //
+    ASSERT_TRUE(
+        memcmp( g_outputMap, LinearInverse, sizeof( LinearInverse ) ) == 0 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test the modification of the output map
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, ModifyOutputMap )
+{
+    //
+    // Cue up some maps and load them in
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+    g_result = true;
+    ASSERT_TRUE( ProcessCommand( "l" ) );
+
+    //
+    // Try some failed input modification commands
+    //
+    ASSERT_FALSE( ProcessCommand( "o" ) );         // no params
+    ASSERT_FALSE( ProcessCommand( "o 6" ) );       // bin but no value
+    ASSERT_FALSE( ProcessCommand( "o -2 1234" ) ); // invalid bin negative
+    ASSERT_FALSE( ProcessCommand( "o 10 1234" ) ); // invalid bin too large
+    ASSERT_FALSE( ProcessCommand( "o 5 poiu" ) );  // invalid value
+
+    //
+    // Modify a few bins
+    //
+    ASSERT_TRUE( ProcessCommand( "o 0 1234" ) );
+    ASSERT_TRUE( ProcessCommand( "o 2 5678" ) );
+    ASSERT_TRUE( ProcessCommand( "o 7 cdef" ) );
+
+    //
+    // Request the maps to be saved so we can see the contents
+    //
+    g_result = true;
+    ASSERT_TRUE( ProcessCommand( "s" ) );
+
+    //
+    // Verify the maps have changed as expected
+    //
+    ASSERT_EQ( g_outputMap[ 0 ], 0x1234 );
+    ASSERT_EQ( g_outputMap[ 1 ], 0xe000 ); // unmodified
+    ASSERT_EQ( g_outputMap[ 2 ], 0x5678 );
+    ASSERT_EQ( g_outputMap[ 6 ], 0x4000 ); // unmodified
+    ASSERT_EQ( g_outputMap[ 7 ], 0xcdef );
+    ASSERT_EQ( g_outputMap[ 8 ], 0x0000 ); // unmodified
+
+    //
+    // Sanity check that the input map has not changed at all
+    //
+    ASSERT_TRUE(
+        memcmp( g_inputMap, LinearOneToOne, sizeof( LinearOneToOne ) ) == 0 );
 }

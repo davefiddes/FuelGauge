@@ -179,6 +179,41 @@ static bool ProcessMapDisplayCommand()
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Modify a value in a specific bin in a given map
+//!
+///////////////////////////////////////////////////////////////////////////////
+static bool ProcessModifyMapValueCommand( const char* command, uint16_t* map )
+{
+    uint8_t  bin;
+    uint16_t value;
+
+    int ret = sscanf( command, "%hhd %hx", &bin, &value );
+
+    //
+    // bail if we don't have two values read successfully
+    //
+    if ( ret != 2 )
+    {
+        return false;
+    }
+
+    //
+    // Range check the bin value
+    //
+    if ( bin >= MAPSIZE )
+    {
+        return false;
+    }
+
+    //
+    // With valid input we can now modify the map
+    //
+    map[ bin ] = value;
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Process a command
 //!
 ///////////////////////////////////////////////////////////////////////////////
@@ -218,10 +253,10 @@ bool ProcessCommand( const char* command )
         result = ProcessOneShotMapping();
         break;
     case 'i':
-        /* code */
+        result = ProcessModifyMapValueCommand( &command[ 1 ], s_inputMap );
         break;
     case 'o':
-        /* code */
+        result = ProcessModifyMapValueCommand( &command[ 1 ], s_outputMap );
         break;
     case 'm':
         result = ProcessMapDisplayCommand();
