@@ -159,6 +159,26 @@ static bool ProcessSaveCommand()
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Display the contents of our input and output maps
+//!
+///////////////////////////////////////////////////////////////////////////////
+static bool ProcessMapDisplayCommand()
+{
+    for ( int i = 0; i < MAPSIZE; i++ )
+    {
+        HAL_Printf( "Input[%d] : %0#x\n", i, g_inputMap[ i ] );
+    }
+
+    for ( int i = 0; i < MAPSIZE; i++ )
+    {
+        HAL_Printf( "Output[%d] : %0#x\n", i, g_outputMap[ i ] );
+    }
+
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Process a command
 //!
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,7 +224,7 @@ bool ProcessCommand( const char* command )
         /* code */
         break;
     case 'm':
-        /* code */
+        result = ProcessMapDisplayCommand();
         break;
     case 's':
         result = ProcessSaveCommand();

@@ -187,7 +187,7 @@ TEST( Command, InputOutput )
     // Display the current tank and gauge values
     ASSERT_TRUE( ProcessCommand( "d" ) );
     ASSERT_EQ( g_output.size(), 1 );
-    ASSERT_STREQ( g_output[ 0 ].c_str(), "Tank: 0x1234 Gauge: 0x5678\n" );
+    EXPECT_STREQ( g_output[ 0 ].c_str(), "Tank: 0x1234 Gauge: 0x5678\n" );
 
     // Attempt to set the gauge output (this will fail in Run mode)
     ASSERT_FALSE( ProcessCommand( "g 1234" ) );
@@ -250,7 +250,7 @@ TEST( Command, OneShotValueMapping )
     ASSERT_TRUE( ProcessCommand( "t" ) );
     ASSERT_EQ( g_gauge, 0xedcb );
     ASSERT_EQ( g_output.size(), 1 );
-    ASSERT_STREQ(
+    EXPECT_STREQ(
         g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb\n" );
 }
 
@@ -286,7 +286,7 @@ TEST( Command, OneShotValueMappingReverse )
     ASSERT_TRUE( ProcessCommand( "t" ) );
     ASSERT_EQ( g_gauge, 0xedca );
     ASSERT_EQ( g_output.size(), 1 );
-    ASSERT_STREQ(
+    EXPECT_STREQ(
         g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0xedcb Gauge: 0xedca\n" );
 }
 
@@ -342,4 +342,55 @@ TEST( Command, MapLoadAndSave )
         memcmp( g_inputMap, LinearOneToOne, sizeof( LinearOneToOne ) ) == 0 );
     ASSERT_TRUE(
         memcmp( g_outputMap, LinearInverse, sizeof( LinearInverse ) ) == 0 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test the display of input and output map values
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, MapDisplay )
+{
+    //
+    // Cue up some maps
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+
+    //
+    // Load in our maps successfully
+    //
+    g_result = true;
+    ASSERT_TRUE( ProcessCommand( "l" ) );
+
+    //
+    // Request to display the maps
+    //
+    g_output.clear();
+    ASSERT_TRUE( ProcessCommand( "m" ) );
+
+    //
+    // Verify the output matches the two maps we loaded
+    //
+    ASSERT_EQ( g_output.size(), 18 );
+    EXPECT_STREQ( g_output[ 0 ].c_str(), "Input[0] : 0\n" ); // zero is special
+    EXPECT_STREQ( g_output[ 1 ].c_str(), "Input[1] : 0x2000\n" );
+    EXPECT_STREQ( g_output[ 2 ].c_str(), "Input[2] : 0x4000\n" );
+    EXPECT_STREQ( g_output[ 3 ].c_str(), "Input[3] : 0x6000\n" );
+    EXPECT_STREQ( g_output[ 4 ].c_str(), "Input[4] : 0x8000\n" );
+    EXPECT_STREQ( g_output[ 5 ].c_str(), "Input[5] : 0xa000\n" );
+    EXPECT_STREQ( g_output[ 6 ].c_str(), "Input[6] : 0xc000\n" );
+    EXPECT_STREQ( g_output[ 7 ].c_str(), "Input[7] : 0xe000\n" );
+    EXPECT_STREQ( g_output[ 8 ].c_str(), "Input[8] : 0xffff\n" );
+
+    EXPECT_STREQ( g_output[ 9 ].c_str(), "Output[0] : 0xffff\n" );
+    EXPECT_STREQ( g_output[ 10 ].c_str(), "Output[1] : 0xe000\n" );
+    EXPECT_STREQ( g_output[ 11 ].c_str(), "Output[2] : 0xc000\n" );
+    EXPECT_STREQ( g_output[ 12 ].c_str(), "Output[3] : 0xa000\n" );
+    EXPECT_STREQ( g_output[ 13 ].c_str(), "Output[4] : 0x8000\n" );
+    EXPECT_STREQ( g_output[ 14 ].c_str(), "Output[5] : 0x6000\n" );
+    EXPECT_STREQ( g_output[ 15 ].c_str(), "Output[6] : 0x4000\n" );
+    EXPECT_STREQ( g_output[ 16 ].c_str(), "Output[7] : 0x2000\n" );
+    EXPECT_STREQ( g_output[ 17 ].c_str(), "Output[8] : 0\n" ); // zero is
+                                                               // special
 }
