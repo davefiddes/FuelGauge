@@ -36,6 +36,7 @@ extern "C" {
 bool IsRunning( void );
 
 bool ProcessCommand( const char* command );
+void RunGauge( void );
 
 #ifdef __cplusplus // Provide C++ Compatibility
 }

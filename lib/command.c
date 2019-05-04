@@ -122,7 +122,7 @@ static bool ProcessGaugeOutputCommand( const char* command )
 //! \brief  Run a one-shot mapping of the current tank input to gauge output
 //!
 ///////////////////////////////////////////////////////////////////////////////
-static bool ProcessOneShotMapping()
+static bool ProcessMapping( bool logging )
 {
     uint16_t input = HAL_GetTankInput();
 
@@ -131,8 +131,12 @@ static bool ProcessOneShotMapping()
     uint16_t output = MapValue( s_outputMap, actual );
 
     HAL_SetGaugeOutput( output );
-    HAL_Printf(
-        "Tank: %0#x Actual: %0#x Gauge: %0#x\n", input, actual, output );
+
+    if ( logging )
+    {
+        HAL_Printf(
+            "Tank: %0#x Actual: %0#x Gauge: %0#x\n", input, actual, output );
+    }
 
     return true;
 }
@@ -250,7 +254,8 @@ bool ProcessCommand( const char* command )
         result = ProcessGaugeOutputCommand( &command[ 1 ] );
         break;
     case 't':
-        result = ProcessOneShotMapping();
+        // Read the input and map with logging
+        result = ProcessMapping( true );
         break;
     case 'i':
         result = ProcessModifyMapValueCommand( &command[ 1 ], s_inputMap );
@@ -273,4 +278,21 @@ bool ProcessCommand( const char* command )
     }
 
     return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Run the guage by reading the tank input, mapping and then changing
+//!         the output
+//!
+//! This runs the mapping process once before returning. It is envisaged this
+//! is run periodically from a main loop
+//!
+///////////////////////////////////////////////////////////////////////////////
+void RunGauge( void )
+{
+    //
+    // Run the mapping command but with logging turned off
+    //
+    ProcessMapping( false );
 }

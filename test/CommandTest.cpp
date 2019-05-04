@@ -292,6 +292,56 @@ TEST( Command, OneShotValueMappingReverse )
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Test normal running of the gauge
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, RunGauge )
+{
+    //
+    // Clear the output log
+    //
+    g_output.clear();
+
+    //
+    // Set the tank input and gauge output to known values
+    //
+    g_tank = 0x1234;
+    g_gauge = 0x5678;
+
+    //
+    // Cue up some maps and then ask them to be loaded
+    //
+    memcpy( &g_inputMap, LinearInverse, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearOneToOne, sizeof( g_outputMap ) );
+    ASSERT_TRUE( ProcessCommand( "l" ) );
+
+    //
+    // Run the gauge and verify the output changes to match the input based on
+    // the map
+    //
+    g_tank = 0x1234;
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_TRUE( g_output.empty() );
+
+    g_tank = 0x3000;
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0xd000 );
+    ASSERT_TRUE( g_output.empty() );
+
+    g_tank = 0xC100;
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0x3f00 );
+    ASSERT_TRUE( g_output.empty() );
+
+    g_tank = 0x1234;
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_TRUE( g_output.empty() );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Test the setting of input and output map values
 //!
 ///////////////////////////////////////////////////////////////////////////////
