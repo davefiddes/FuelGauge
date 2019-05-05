@@ -203,6 +203,8 @@ TEST( Command, InputOutput )
     ASSERT_EQ( g_gauge, 0xfedc );
     ASSERT_TRUE( ProcessCommand( "g 123456789" ) );
     ASSERT_EQ( g_gauge, 0x6789 );
+    ASSERT_TRUE( ProcessCommand( "g1234" ) );
+    ASSERT_EQ( g_gauge, 0x1234 );
 }
 
 const uint16_t ZeroMap[ MAPSIZE ] = { 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,

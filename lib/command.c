@@ -22,9 +22,9 @@
 #include "command.h"
 #include "hal.h"
 #include "mapper.h"
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <string.h>
 
 //
@@ -120,6 +120,95 @@ static void PrintBin( uint8_t bin )
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Parse a uint16_t value from the supplied string in hex
+//!
+///////////////////////////////////////////////////////////////////////////////
+static char* ParseValue( const char* str, uint16_t* value )
+{
+    char     ch;
+    bool     success = false;
+    uint16_t tempvalue = 0;
+
+    //
+    // Skip over any preceeding whitespace
+    //
+    while ( isspace( *str ) )
+    {
+        str++;
+    }
+
+    //
+    // while there are hex digits load them in - extra digits will be ignored
+    //
+    while ( isxdigit( ch = *str++ ) )
+    {
+        // Support both upper and lower case hex
+        if ( isupper( ch ) )
+        {
+            ch = tolower( ch );
+        }
+
+        if ( isdigit( ch ) )
+        {
+            ch = ch - '0';
+        }
+        else
+        {
+            ch = ch - 'a' + 0xA;
+        }
+
+        tempvalue = tempvalue << 4;
+        tempvalue = tempvalue + (unsigned char)ch;
+        success = true;
+    }
+
+    if ( success )
+    {
+        *value = tempvalue;
+        return (char*)str;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Parse a mapping bin value
+//!
+//!
+///////////////////////////////////////////////////////////////////////////////
+static char* ParseBin( const char* str, uint8_t* bin )
+{
+    char    ch;
+    bool    success = false;
+    uint8_t tempbin = 0;
+
+    while ( isspace( *str ) )
+    {
+        str++;
+    }
+
+    while ( isdigit( ch = *str++ ) )
+    {
+        tempbin = tempbin * 10 + (ch - '0');
+        success = true;
+    }
+
+    if ( success)
+    {
+        *bin = tempbin;
+        return (char*)str;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Display current tank input value and output gauge value
 //!
 ///////////////////////////////////////////////////////////////////////////////
@@ -150,9 +239,8 @@ static bool ProcessGaugeOutputCommand( const char* command )
     }
 
     uint16_t output;
-    int      ret = sscanf( command, "%hx", &output );
 
-    if ( ret == 1 )
+    if ( ParseValue( command, &output ) )
     {
         HAL_SetGaugeOutput( output );
         return true;
@@ -250,12 +338,8 @@ static bool ProcessModifyMapValueCommand( const char* command, uint16_t* map )
     uint8_t  bin;
     uint16_t value;
 
-    int ret = sscanf( command, "%hhd %hx", &bin, &value );
-
-    //
-    // bail if we don't have two values read successfully
-    //
-    if ( ret != 2 )
+    char* newpos = ParseBin( command, &bin );
+    if ( newpos == NULL )
     {
         return false;
     }
@@ -264,6 +348,11 @@ static bool ProcessModifyMapValueCommand( const char* command, uint16_t* map )
     // Range check the bin value
     //
     if ( bin >= MAPSIZE )
+    {
+        return false;
+    }
+
+    if ( !ParseValue( newpos, &value ) )
     {
         return false;
     }
