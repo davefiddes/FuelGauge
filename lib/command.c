@@ -24,6 +24,7 @@
 #include "mapper.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 //
@@ -75,15 +76,60 @@ bool IsRunning()
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Print a short uint16_t value as text to the console
+//!
+///////////////////////////////////////////////////////////////////////////////
+static void PrintValue( uint16_t value )
+{
+    char buf[ 5 ];
+
+    for ( uint8_t i = 4; i-- > 0; )
+    {
+        uint8_t nibble = value & 0xF;
+        if ( nibble < 0xA )
+        {
+            buf[ i ] = '0' + nibble;
+        }
+        else
+        {
+            buf[ i ] = 'a' + nibble - 0xA;
+        }
+
+        value = value >> 4;
+    }
+    buf[ 4 ] = '\0';
+
+    HAL_PrintText( buf );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Print a bin number as text to the console
+//!
+///////////////////////////////////////////////////////////////////////////////
+static void PrintBin( uint8_t bin )
+{
+    if ( bin <= MAPSIZE )
+    {
+        char buf[ 2 ];
+        buf[ 0 ] = '0' + bin;
+        buf[ 1 ] = '\0';
+        HAL_PrintText( buf );
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Display current tank input value and output gauge value
 //!
 ///////////////////////////////////////////////////////////////////////////////
 static bool ProcessDisplayCommand()
 {
-    uint16_t input = HAL_GetTankInput();
-    uint16_t output = HAL_GetGaugeOutput();
-
-    HAL_Printf( "Tank: %0#x Gauge: %0#x\n", input, output );
+    HAL_PrintText( "Tank: 0x" );
+    PrintValue( HAL_GetTankInput() );
+    HAL_PrintText( " Gauge: 0x" );
+    PrintValue( HAL_GetGaugeOutput() );
+    HAL_PrintNewline();
 
     return true;
 }
@@ -134,8 +180,13 @@ static bool ProcessMapping( bool logging )
 
     if ( logging )
     {
-        HAL_Printf(
-            "Tank: %0#x Actual: %0#x Gauge: %0#x\n", input, actual, output );
+        HAL_PrintText( "Tank: 0x" );
+        PrintValue( input );
+        HAL_PrintText( " Actual: 0x" );
+        PrintValue( actual );
+        HAL_PrintText( " Gauge: 0x" );
+        PrintValue( output );
+        HAL_PrintNewline();
     }
 
     return true;
@@ -170,12 +221,20 @@ static bool ProcessMapDisplayCommand()
 {
     for ( int i = 0; i < MAPSIZE; i++ )
     {
-        HAL_Printf( "Input[%d] : %0#x\n", i, s_inputMap[ i ] );
+        HAL_PrintText( "Input[" );
+        PrintBin( i );
+        HAL_PrintText( "] : 0x" );
+        PrintValue( s_inputMap[ i ] );
+        HAL_PrintNewline();
     }
 
     for ( int i = 0; i < MAPSIZE; i++ )
     {
-        HAL_Printf( "Output[%d] : %0#x\n", i, s_outputMap[ i ] );
+        HAL_PrintText( "Output[" );
+        PrintBin( i );
+        HAL_PrintText( "] : 0x" );
+        PrintValue( s_outputMap[ i ] );
+        HAL_PrintNewline();
     }
 
     return true;

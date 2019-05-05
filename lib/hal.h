@@ -22,8 +22,8 @@
 #ifndef HAL_H
 #define HAL_H
 
+#include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
 
 #if defined( __XC )
 #include <xc.h> /* XC8 General Include File */
@@ -37,7 +37,8 @@ uint16_t HAL_GetTankInput( void );
 uint16_t HAL_GetGaugeOutput( void );
 void     HAL_SetGaugeOutput( uint16_t value );
 
-void HAL_Printf( const char* format, ... );
+void HAL_PrintText( const char* text );
+void HAL_PrintNewline( void );
 
 bool HAL_LoadMaps( uint16_t* input, uint16_t* output );
 bool HAL_SaveMaps( const uint16_t* input, const uint16_t* output );
