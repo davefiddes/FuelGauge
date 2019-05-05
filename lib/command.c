@@ -52,7 +52,7 @@
 //
 //! Flag to indicate whether we are running or programming the gauge
 //
-static bool g_running = true;
+static bool s_running;
 
 //
 //! Input mapping between the tank value and a linear actual value
@@ -63,16 +63,6 @@ static uint16_t s_inputMap[ MAPSIZE ];
 //! Output mapping between a linear actual value and the guage output
 //
 static uint16_t s_outputMap[ MAPSIZE ];
-
-///////////////////////////////////////////////////////////////////////////////
-//!
-//! \brief  Check whether the Fuel Gauge is in programming or run mode
-//!
-///////////////////////////////////////////////////////////////////////////////
-bool IsRunning()
-{
-    return g_running;
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
@@ -192,11 +182,11 @@ static char* ParseBin( const char* str, uint8_t* bin )
 
     while ( isdigit( ch = *str++ ) )
     {
-        tempbin = tempbin * 10 + (ch - '0');
+        tempbin = tempbin * 10 + ( ch - '0' );
         success = true;
     }
 
-    if ( success)
+    if ( success )
     {
         *bin = tempbin;
         return (char*)str;
@@ -233,7 +223,7 @@ static bool ProcessGaugeOutputCommand( const char* command )
     //
     // Fail immediately if we are running
     //
-    if ( g_running )
+    if ( s_running )
     {
         return false;
     }
@@ -366,6 +356,16 @@ static bool ProcessModifyMapValueCommand( const char* command, uint16_t* map )
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Initialise the guage and get it ready to run
+//!
+///////////////////////////////////////////////////////////////////////////////
+void InitialiseGauge()
+{
+    s_running = HAL_LoadMaps( s_inputMap, s_outputMap );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Process a command
 //!
 ///////////////////////////////////////////////////////////////////////////////
@@ -386,12 +386,12 @@ bool ProcessCommand( const char* command )
     switch ( command[ 0 ] )
     {
     case 'p':
-        g_running = false;
+        s_running = false;
         result = true;
         break;
 
     case 'r':
-        g_running = true;
+        s_running = true;
         result = true;
         break;
 
@@ -443,4 +443,14 @@ void RunGauge( void )
     // Run the mapping command but with logging turned off
     //
     ProcessMapping( false );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Check whether the Fuel Gauge is in programming or run mode
+//!
+///////////////////////////////////////////////////////////////////////////////
+bool IsRunning()
+{
+    return s_running;
 }

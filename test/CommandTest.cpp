@@ -142,6 +142,8 @@ bool HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
 ///////////////////////////////////////////////////////////////////////////////
 TEST( Command, RunProgramSwitching )
 {
+    InitialiseGauge();
+
     // Basic flipping between Run and Program
     ASSERT_TRUE( IsRunning() );
     ASSERT_TRUE( ProcessCommand( "p" ) );
@@ -373,7 +375,7 @@ TEST( Command, MapLoadAndSave )
     ASSERT_FALSE( ProcessCommand( "s" ) );
 
     //
-    // Verify the have not been saved
+    // Verify they have not been saved
     //
     ASSERT_TRUE( memcmp( g_inputMap, ZeroMap, sizeof( ZeroMap ) ) == 0 );
     ASSERT_TRUE( memcmp( g_outputMap, ZeroMap, sizeof( ZeroMap ) ) == 0 );
@@ -549,3 +551,47 @@ TEST( Command, ModifyOutputMap )
     ASSERT_TRUE(
         memcmp( g_inputMap, LinearOneToOne, sizeof( LinearOneToOne ) ) == 0 );
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test the start up of the gauge
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, Initilisation )
+{
+    //
+    // Cue up some maps
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+
+    //
+    // Request that loading fails before initialising
+    //
+    g_result = false;
+    InitialiseGauge();
+    ASSERT_FALSE( IsRunning() );
+
+    //
+    // Load in our maps successfully on initialisation
+    //
+    g_result = true;
+    InitialiseGauge();
+
+    //
+    // Check that the maps loaded during initialisation are correct
+    //
+    memcpy( &g_inputMap, ZeroMap, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, ZeroMap, sizeof( g_outputMap ) );
+    g_result = true;
+    ASSERT_TRUE( ProcessCommand( "s" ) );
+
+    //
+    // Verify the maps being saved match those loaded
+    //
+    ASSERT_TRUE(
+        memcmp( g_inputMap, LinearOneToOne, sizeof( LinearOneToOne ) ) == 0 );
+    ASSERT_TRUE(
+        memcmp( g_outputMap, LinearInverse, sizeof( LinearInverse ) ) == 0 );
+}
+

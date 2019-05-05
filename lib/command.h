@@ -33,10 +33,10 @@
 extern "C" {
 #endif
 
-bool IsRunning( void );
-
+void InitialiseGauge( void );
 bool ProcessCommand( const char* command );
 void RunGauge( void );
+bool IsRunning( void );
 
 #ifdef __cplusplus // Provide C++ Compatibility
 }
