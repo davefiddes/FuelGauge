@@ -36,8 +36,14 @@ uint16_t MapValue( const uint16_t* map, uint16_t value )
     uint8_t  upperBin = lowerBin + 1;
     uint16_t lowerValue = value & 0xE000;
 
-    uint32_t output =
-        ( value - lowerValue ) * ( map[ upperBin ] - map[ lowerBin ] );
+    //
+    // Use uint32_t values to differences to avoid overflowing a uin16_t when
+    // multiplying on an 8-bit PIC
+    //
+    uint32_t valueDiff = value - lowerValue;
+    uint32_t binDiff = map[ upperBin ] - map[ lowerBin ];
+
+    uint32_t output = valueDiff * binDiff;
 
     output = map[ lowerBin ] + ( output >> 13 );
 
