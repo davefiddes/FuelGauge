@@ -314,7 +314,7 @@ TEST( Command, RunGauge )
     //
     memcpy( &g_inputMap, LinearInverse, sizeof( g_inputMap ) );
     memcpy( &g_outputMap, LinearOneToOne, sizeof( g_outputMap ) );
-    ASSERT_TRUE( ProcessCommand( "l" ) );
+    InitialiseGauge();
 
     //
     // Run the gauge and verify the output changes to match the input based on
@@ -338,6 +338,16 @@ TEST( Command, RunGauge )
     g_tank = 0x1234;
     RunGauge();
     ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_TRUE( g_output.empty() );
+
+    //
+    // Change to Program mode and check that runing the gauge does nothing
+    //
+    ASSERT_TRUE( ProcessCommand( "p" ) );
+    g_tank = 0x3000;
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_FALSE( IsRunning() );
     ASSERT_TRUE( g_output.empty() );
 }
 
@@ -594,4 +604,3 @@ TEST( Command, Initilisation )
     ASSERT_TRUE(
         memcmp( g_outputMap, LinearInverse, sizeof( LinearInverse ) ) == 0 );
 }
-

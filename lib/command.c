@@ -442,7 +442,10 @@ void RunGauge( void )
     //
     // Run the mapping command but with logging turned off
     //
-    ProcessMapping( false );
+    if ( s_running )
+    {
+        ProcessMapping( false );
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
