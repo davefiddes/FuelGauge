@@ -376,12 +376,10 @@ void InitialiseGauge()
 ///////////////////////////////////////////////////////////////////////////////
 bool ProcessCommand( const char* command )
 {
-    size_t len = strlen( command );
-
     //
     // Barf if we have an empty string
     //
-    if ( len == 0 )
+    if ( *command == '\0' )
     {
         return false;
     }
