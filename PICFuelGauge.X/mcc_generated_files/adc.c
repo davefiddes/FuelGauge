@@ -13,7 +13,7 @@
   @Description
     This source file provides implementations for driver APIs for ADC.
     Generation Information :
-        Product Revision  :  Foundation Services Library - 0.1.24
+        Product Revision  :  Foundation Services Library - 0.1.31
         Device            :  PIC12F1840
         Driver Version    :  2.00
     The generated drivers are tested against the following:

@@ -13,12 +13,12 @@
   @Description
     This header file provides APIs for driver for .
     Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.65.2
+        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.76
         Device            :  PIC12F1840
-        Driver Version    :  2.01
+        Driver Version    :  2.11
     The generated drivers are tested against the following:
-        Compiler          :  XC8 1.45
-        MPLAB 	          :  MPLAB X 4.15	
+        Compiler          :  XC8 2.00
+        MPLAB 	          :  MPLAB X 5.10	
 */
 
 /*
@@ -47,6 +47,12 @@
 #ifndef PIN_MANAGER_H
 #define PIN_MANAGER_H
 
+/**
+  Section: Included Files
+*/
+
+#include <xc.h>
+
 #define INPUT   1
 #define OUTPUT  0
 
@@ -60,53 +66,53 @@
 #define PULL_UP_DISABLED     0
 
 // get/set RA0 procedures
-#define RA0_SetHigh()               do { LATAbits.LATA0 = 1; } while(0)
-#define RA0_SetLow()                do { LATAbits.LATA0 = 0; } while(0)
-#define RA0_Toggle()                do { LATAbits.LATA0 = ~LATAbits.LATA0; } while(0)
+#define RA0_SetHigh()            do { LATAbits.LATA0 = 1; } while(0)
+#define RA0_SetLow()             do { LATAbits.LATA0 = 0; } while(0)
+#define RA0_Toggle()             do { LATAbits.LATA0 = ~LATAbits.LATA0; } while(0)
 #define RA0_GetValue()              PORTAbits.RA0
-#define RA0_SetDigitalInput()       do { TRISAbits.TRISA0 = 1; } while(0)
-#define RA0_SetDigitalOutput()      do { TRISAbits.TRISA0 = 0; } while(0)
+#define RA0_SetDigitalInput()    do { TRISAbits.TRISA0 = 1; } while(0)
+#define RA0_SetDigitalOutput()   do { TRISAbits.TRISA0 = 0; } while(0)
 #define RA0_SetPullup()             do { WPUAbits.WPUA0 = 1; } while(0)
 #define RA0_ResetPullup()           do { WPUAbits.WPUA0 = 0; } while(0)
 #define RA0_SetAnalogMode()         do { ANSELAbits.ANSA0 = 1; } while(0)
 #define RA0_SetDigitalMode()        do { ANSELAbits.ANSA0 = 0; } while(0)
 
 // get/set RA2 procedures
-#define RA2_SetHigh()               do { LATAbits.LATA2 = 1; } while(0)
-#define RA2_SetLow()                do { LATAbits.LATA2 = 0; } while(0)
-#define RA2_Toggle()                do { LATAbits.LATA2 = ~LATAbits.LATA2; } while(0)
+#define RA2_SetHigh()            do { LATAbits.LATA2 = 1; } while(0)
+#define RA2_SetLow()             do { LATAbits.LATA2 = 0; } while(0)
+#define RA2_Toggle()             do { LATAbits.LATA2 = ~LATAbits.LATA2; } while(0)
 #define RA2_GetValue()              PORTAbits.RA2
-#define RA2_SetDigitalInput()       do { TRISAbits.TRISA2 = 1; } while(0)
-#define RA2_SetDigitalOutput()      do { TRISAbits.TRISA2 = 0; } while(0)
+#define RA2_SetDigitalInput()    do { TRISAbits.TRISA2 = 1; } while(0)
+#define RA2_SetDigitalOutput()   do { TRISAbits.TRISA2 = 0; } while(0)
 #define RA2_SetPullup()             do { WPUAbits.WPUA2 = 1; } while(0)
 #define RA2_ResetPullup()           do { WPUAbits.WPUA2 = 0; } while(0)
 #define RA2_SetAnalogMode()         do { ANSELAbits.ANSA2 = 1; } while(0)
 #define RA2_SetDigitalMode()        do { ANSELAbits.ANSA2 = 0; } while(0)
 
-// get/set pot aliases
-#define pot_TRIS                 TRISAbits.TRISA4
-#define pot_LAT                  LATAbits.LATA4
-#define pot_PORT                 PORTAbits.RA4
-#define pot_WPU                  WPUAbits.WPUA4
-#define pot_ANS                  ANSELAbits.ANSA4
-#define pot_SetHigh()            do { LATAbits.LATA4 = 1; } while(0)
-#define pot_SetLow()             do { LATAbits.LATA4 = 0; } while(0)
-#define pot_Toggle()             do { LATAbits.LATA4 = ~LATAbits.LATA4; } while(0)
-#define pot_GetValue()           PORTAbits.RA4
-#define pot_SetDigitalInput()    do { TRISAbits.TRISA4 = 1; } while(0)
-#define pot_SetDigitalOutput()   do { TRISAbits.TRISA4 = 0; } while(0)
-#define pot_SetPullup()          do { WPUAbits.WPUA4 = 1; } while(0)
-#define pot_ResetPullup()        do { WPUAbits.WPUA4 = 0; } while(0)
-#define pot_SetAnalogMode()      do { ANSELAbits.ANSA4 = 1; } while(0)
-#define pot_SetDigitalMode()     do { ANSELAbits.ANSA4 = 0; } while(0)
+// get/set tank aliases
+#define tank_TRIS                 TRISAbits.TRISA4
+#define tank_LAT                  LATAbits.LATA4
+#define tank_PORT                 PORTAbits.RA4
+#define tank_WPU                  WPUAbits.WPUA4
+#define tank_ANS                  ANSELAbits.ANSA4
+#define tank_SetHigh()            do { LATAbits.LATA4 = 1; } while(0)
+#define tank_SetLow()             do { LATAbits.LATA4 = 0; } while(0)
+#define tank_Toggle()             do { LATAbits.LATA4 = ~LATAbits.LATA4; } while(0)
+#define tank_GetValue()           PORTAbits.RA4
+#define tank_SetDigitalInput()    do { TRISAbits.TRISA4 = 1; } while(0)
+#define tank_SetDigitalOutput()   do { TRISAbits.TRISA4 = 0; } while(0)
+#define tank_SetPullup()          do { WPUAbits.WPUA4 = 1; } while(0)
+#define tank_ResetPullup()        do { WPUAbits.WPUA4 = 0; } while(0)
+#define tank_SetAnalogMode()      do { ANSELAbits.ANSA4 = 1; } while(0)
+#define tank_SetDigitalMode()     do { ANSELAbits.ANSA4 = 0; } while(0)
 
 // get/set RA5 procedures
-#define RA5_SetHigh()               do { LATAbits.LATA5 = 1; } while(0)
-#define RA5_SetLow()                do { LATAbits.LATA5 = 0; } while(0)
-#define RA5_Toggle()                do { LATAbits.LATA5 = ~LATAbits.LATA5; } while(0)
+#define RA5_SetHigh()            do { LATAbits.LATA5 = 1; } while(0)
+#define RA5_SetLow()             do { LATAbits.LATA5 = 0; } while(0)
+#define RA5_Toggle()             do { LATAbits.LATA5 = ~LATAbits.LATA5; } while(0)
 #define RA5_GetValue()              PORTAbits.RA5
-#define RA5_SetDigitalInput()       do { TRISAbits.TRISA5 = 1; } while(0)
-#define RA5_SetDigitalOutput()      do { TRISAbits.TRISA5 = 0; } while(0)
+#define RA5_SetDigitalInput()    do { TRISAbits.TRISA5 = 1; } while(0)
+#define RA5_SetDigitalOutput()   do { TRISAbits.TRISA5 = 0; } while(0)
 #define RA5_SetPullup()             do { WPUAbits.WPUA5 = 1; } while(0)
 #define RA5_ResetPullup()           do { WPUAbits.WPUA5 = 0; } while(0)
 

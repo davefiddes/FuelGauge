@@ -13,12 +13,12 @@
   @Description
     This header file provides APIs for driver for EUSART.
     Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.65.2
+        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.76
         Device            :  PIC12F1840
-        Driver Version    :  2.01
+        Driver Version    :  2.1.0
     The generated drivers are tested against the following:
-        Compiler          :  XC8 1.45
-        MPLAB 	          :  MPLAB X 4.15
+        Compiler          :  XC8 2.00
+        MPLAB 	          :  MPLAB X 5.10
 */
 
 /*
@@ -68,6 +68,20 @@
 */
 
 #define EUSART_DataReady  (EUSART_is_rx_ready())
+
+/**
+  Section: Data Type Definitions
+*/
+
+typedef union {
+    struct {
+        unsigned perr : 1;
+        unsigned ferr : 1;
+        unsigned oerr : 1;
+        unsigned reserved : 5;
+    };
+    uint8_t status;
+}eusart_status_t;
 
 
 /**
@@ -242,6 +256,54 @@ bool EUSART_is_tx_done(void);
 
 /**
   @Summary
+    Gets the error status of the last read byte.
+
+  @Description
+    This routine gets the error status of the last read byte.
+
+  @Preconditions
+    EUSART_Initialize() function should have been called
+    before calling this function. The returned value is only
+    updated after a read is called.
+
+  @Param
+    None
+
+  @Returns
+    the status of the last read byte
+
+  @Example
+	<code>
+    void main(void)
+    {
+        volatile uint8_t rxData;
+        volatile eusart_status_t rxStatus;
+        
+        // Initialize the device
+        SYSTEM_Initialize();
+        
+        // Enable the Global Interrupts
+        INTERRUPT_GlobalInterruptEnable();
+        
+        while(1)
+        {
+            // Logic to echo received data
+            if(EUSART_is_rx_ready())
+            {
+                rxData = EUSART_Read();
+                rxStatus = EUSART_get_last_status();
+                if(rxStatus.ferr){
+                    LED_0_SetHigh();
+                }
+            }
+        }
+    }
+    </code>
+ */
+eusart_status_t EUSART_get_last_status(void);
+
+/**
+  @Summary
     Read a byte of data from the EUSART.
 
   @Description
@@ -281,6 +343,60 @@ uint8_t EUSART_Read(void);
 void EUSART_Write(uint8_t txData);
 
 
+
+/**
+  @Summary
+    Set EUSART Framing Error Handler
+
+  @Description
+    This API sets the function to be called upon EUSART framing error
+
+  @Preconditions
+    Initialize  the EUSART before calling this API
+
+  @Param
+    Address of function to be set as framing error handler
+
+  @Returns
+    None
+*/
+void EUSART_SetFramingErrorHandler(void (* interruptHandler)(void));
+
+/**
+  @Summary
+    Set EUSART Overrun Error Handler
+
+  @Description
+    This API sets the function to be called upon EUSART overrun error
+
+  @Preconditions
+    Initialize  the EUSART module before calling this API
+
+  @Param
+    Address of function to be set as overrun error handler
+
+  @Returns
+    None
+*/
+void EUSART_SetOverrunErrorHandler(void (* interruptHandler)(void));
+
+/**
+  @Summary
+    Set EUSART Error Handler
+
+  @Description
+    This API sets the function to be called upon EUSART error
+
+  @Preconditions
+    Initialize  the EUSART module before calling this API
+
+  @Param
+    Address of function to be set as error handler
+
+  @Returns
+    None
+*/
+void EUSART_SetErrorHandler(void (* interruptHandler)(void));
 
 
 

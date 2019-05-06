@@ -13,7 +13,7 @@
   @Description
     This header file provides APIs for driver for ADC.
     Generation Information :
-        Product Revision  :  Foundation Services Library - 0.1.24
+        Product Revision  :  Foundation Services Library - 0.1.31
         Device            :  PIC12F1840
         Driver Version    :  2.00
     The generated drivers are tested against the following:
@@ -93,7 +93,7 @@ typedef struct
 
 typedef enum
 {
-    pot =  0x3,
+    tank =  0x3,
     channel_Temp =  0x1D,
     channel_DAC =  0x1E,
     channel_FVR =  0x1F

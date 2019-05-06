@@ -13,12 +13,12 @@
   @Description
     This source file provides APIs for EUSART.
     Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.65.2
+        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.76
         Device            :  PIC12F1840
-        Driver Version    :  2.01
+        Driver Version    :  2.1.0
     The generated drivers are tested against the following:
-        Compiler          :  XC8 1.45
-        MPLAB 	          :  MPLAB X 4.15
+        Compiler          :  XC8 2.00
+        MPLAB 	          :  MPLAB X 5.10
 */
 
 /*
@@ -49,10 +49,19 @@
 */
 #include "eusart.h"
 
+volatile eusart_status_t eusartRxLastError;
 
 /**
   Section: EUSART APIs
 */
+void (*EUSART_FramingErrorHandler)(void);
+void (*EUSART_OverrunErrorHandler)(void);
+void (*EUSART_ErrorHandler)(void);
+
+void EUSART_DefaultFramingErrorHandler(void);
+void EUSART_DefaultOverrunErrorHandler(void);
+void EUSART_DefaultErrorHandler(void);
+
 void EUSART_Initialize(void)
 {
     // Set the EUSART module to the options selected in the user interface.
@@ -73,6 +82,12 @@ void EUSART_Initialize(void)
     SPBRGH = 0x03;
 
 
+    EUSART_SetFramingErrorHandler(EUSART_DefaultFramingErrorHandler);
+    EUSART_SetOverrunErrorHandler(EUSART_DefaultOverrunErrorHandler);
+    EUSART_SetErrorHandler(EUSART_DefaultErrorHandler);
+
+    eusartRxLastError.status = 0;
+
 }
 
 bool EUSART_is_tx_ready(void)
@@ -90,12 +105,17 @@ bool EUSART_is_tx_done(void)
     return TXSTAbits.TRMT;
 }
 
+eusart_status_t EUSART_get_last_status(void){
+    return eusartRxLastError;
+}
+
 uint8_t EUSART_Read(void)
 {
     while(!PIR1bits.RCIF)
     {
     }
 
+    eusartRxLastError.status = 0;
     
     if(1 == RCSTAbits.OERR)
     {
@@ -128,6 +148,31 @@ void putch(char txData)
 }
 
 
+
+void EUSART_DefaultFramingErrorHandler(void){}
+
+void EUSART_DefaultOverrunErrorHandler(void){
+    // EUSART error - restart
+
+    RCSTAbits.CREN = 0;
+    RCSTAbits.CREN = 1;
+
+}
+
+void EUSART_DefaultErrorHandler(void){
+}
+
+void EUSART_SetFramingErrorHandler(void (* interruptHandler)(void)){
+    EUSART_FramingErrorHandler = interruptHandler;
+}
+
+void EUSART_SetOverrunErrorHandler(void (* interruptHandler)(void)){
+    EUSART_OverrunErrorHandler = interruptHandler;
+}
+
+void EUSART_SetErrorHandler(void (* interruptHandler)(void)){
+    EUSART_ErrorHandler = interruptHandler;
+}
 
 
 /**
