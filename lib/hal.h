@@ -40,8 +40,8 @@ void     HAL_SetGaugeOutput( uint16_t value );
 void HAL_PrintText( const char* text );
 void HAL_PrintNewline( void );
 
-bool HAL_LoadMaps( uint16_t* input, uint16_t* output );
-bool HAL_SaveMaps( const uint16_t* input, const uint16_t* output );
+void HAL_LoadMaps( uint16_t* input, uint16_t* output );
+void HAL_SaveMaps( const uint16_t* input, const uint16_t* output );
 
 #ifdef __cplusplus // Provide C++ Compatibility
 }

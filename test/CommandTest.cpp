@@ -100,22 +100,15 @@ uint16_t g_inputMap[ MAPSIZE ];
 //! A test linear actual tank value to gauge output value map
 uint16_t g_outputMap[ MAPSIZE ];
 
-//! Dummy result to return failures
-bool g_result = true;
-
 ///////////////////////////////////////////////////////////////////////////////
 //!
 //! \brief  Load our test maps into the fuel gauge processor
 //!
 ///////////////////////////////////////////////////////////////////////////////
-bool HAL_LoadMaps( uint16_t* input, uint16_t* output )
+void HAL_LoadMaps( uint16_t* input, uint16_t* output )
 {
-    if ( g_result )
-    {
-        memcpy( input, &g_inputMap, sizeof( g_inputMap ) );
-        memcpy( output, &g_outputMap, sizeof( g_outputMap ) );
-    }
-    return g_result;
+    memcpy( input, &g_inputMap, sizeof( g_inputMap ) );
+    memcpy( output, &g_outputMap, sizeof( g_outputMap ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,14 +116,10 @@ bool HAL_LoadMaps( uint16_t* input, uint16_t* output )
 //! \brief  Save the supplied maps into our test maps for checking
 //!
 ///////////////////////////////////////////////////////////////////////////////
-bool HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
+void HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
 {
-    if ( g_result )
-    {
-        memcpy( &g_inputMap, input, sizeof( g_inputMap ) );
-        memcpy( &g_outputMap, output, sizeof( g_outputMap ) );
-    }
-    return g_result;
+    memcpy( &g_inputMap, input, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, output, sizeof( g_outputMap ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -365,35 +354,19 @@ TEST( Command, MapLoadAndSave )
     memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
 
     //
-    // Request that loading fails
+    // Load in our maps
     //
-    g_result = false;
-    ASSERT_FALSE( ProcessCommand( "l" ) );
-
-    //
-    // Load in our maps successfully
-    //
-    g_result = true;
     ASSERT_TRUE( ProcessCommand( "l" ) );
 
     //
-    // Request the maps to be saved - ensure HAL fails the request
+    // Zero out the save destination before saving
     //
     memcpy( &g_inputMap, ZeroMap, sizeof( g_inputMap ) );
     memcpy( &g_outputMap, ZeroMap, sizeof( g_outputMap ) );
-    g_result = false;
-    ASSERT_FALSE( ProcessCommand( "s" ) );
 
     //
-    // Verify they have not been saved
+    // Request the maps to be saved
     //
-    ASSERT_TRUE( memcmp( g_inputMap, ZeroMap, sizeof( ZeroMap ) ) == 0 );
-    ASSERT_TRUE( memcmp( g_outputMap, ZeroMap, sizeof( ZeroMap ) ) == 0 );
-
-    //
-    // Request the maps to be saved - ensure HAL succeeds
-    //
-    g_result = true;
     ASSERT_TRUE( ProcessCommand( "s" ) );
 
     //
@@ -419,9 +392,8 @@ TEST( Command, MapDisplay )
     memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
 
     //
-    // Load in our maps successfully
+    // Load in our maps
     //
-    g_result = true;
     ASSERT_TRUE( ProcessCommand( "l" ) );
 
     //
@@ -467,7 +439,6 @@ TEST( Command, ModifyInputMap )
     //
     memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
     memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
-    g_result = true;
     ASSERT_TRUE( ProcessCommand( "l" ) );
 
     //
@@ -489,7 +460,6 @@ TEST( Command, ModifyInputMap )
     //
     // Request the maps to be saved so we can see the contents
     //
-    g_result = true;
     ASSERT_TRUE( ProcessCommand( "s" ) );
 
     //
@@ -520,7 +490,6 @@ TEST( Command, ModifyOutputMap )
     //
     memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
     memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
-    g_result = true;
     ASSERT_TRUE( ProcessCommand( "l" ) );
 
     //
@@ -542,7 +511,6 @@ TEST( Command, ModifyOutputMap )
     //
     // Request the maps to be saved so we can see the contents
     //
-    g_result = true;
     ASSERT_TRUE( ProcessCommand( "s" ) );
 
     //
@@ -567,7 +535,7 @@ TEST( Command, ModifyOutputMap )
 //! \brief  Test the start up of the gauge
 //!
 ///////////////////////////////////////////////////////////////////////////////
-TEST( Command, Initilisation )
+TEST( Command, Initialisation )
 {
     //
     // Cue up some maps
@@ -576,24 +544,16 @@ TEST( Command, Initilisation )
     memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
 
     //
-    // Request that loading fails before initialising
-    //
-    g_result = false;
-    InitialiseGauge();
-    ASSERT_FALSE( IsRunning() );
-
-    //
     // Load in our maps successfully on initialisation
     //
-    g_result = true;
     InitialiseGauge();
+    ASSERT_TRUE( IsRunning() );
 
     //
     // Check that the maps loaded during initialisation are correct
     //
     memcpy( &g_inputMap, ZeroMap, sizeof( g_inputMap ) );
     memcpy( &g_outputMap, ZeroMap, sizeof( g_outputMap ) );
-    g_result = true;
     ASSERT_TRUE( ProcessCommand( "s" ) );
 
     //

@@ -99,7 +99,7 @@ void HAL_PrintNewline( void )
 //! \note   The map values are stored in big-endian order
 //!
 ///////////////////////////////////////////////////////////////////////////////
-bool HAL_LoadMaps( uint16_t* input, uint16_t* output )
+void HAL_LoadMaps( uint16_t* input, uint16_t* output )
 {
     uint16_t value;
     uint8_t  addr = 0;
@@ -123,8 +123,6 @@ bool HAL_LoadMaps( uint16_t* input, uint16_t* output )
 
         output[ i ] = value;
     }
-
-    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -134,7 +132,7 @@ bool HAL_LoadMaps( uint16_t* input, uint16_t* output )
 //! \note   The map values are stored in big-endian order
 //!
 ///////////////////////////////////////////////////////////////////////////////
-bool HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
+void HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
 {
     uint16_t value;
     uint8_t  addr = 0;
@@ -158,6 +156,4 @@ bool HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
         DATAEE_WriteByte( addr, value & 0xFF );
         addr++;
     }
-
-    return true;
 }

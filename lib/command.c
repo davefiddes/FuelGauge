@@ -277,7 +277,8 @@ static bool ProcessMapping( bool logging )
 ///////////////////////////////////////////////////////////////////////////////
 static bool ProcessLoadCommand()
 {
-    return HAL_LoadMaps( s_inputMap, s_outputMap );
+    HAL_LoadMaps( s_inputMap, s_outputMap );
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -287,7 +288,8 @@ static bool ProcessLoadCommand()
 ///////////////////////////////////////////////////////////////////////////////
 static bool ProcessSaveCommand()
 {
-    return HAL_SaveMaps( s_inputMap, s_outputMap );
+    HAL_SaveMaps( s_inputMap, s_outputMap );
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -361,7 +363,8 @@ static bool ProcessModifyMapValueCommand( const char* command, uint16_t* map )
 ///////////////////////////////////////////////////////////////////////////////
 void InitialiseGauge()
 {
-    s_running = HAL_LoadMaps( s_inputMap, s_outputMap );
+    HAL_LoadMaps( s_inputMap, s_outputMap );
+    s_running = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
