@@ -360,6 +360,31 @@ static bool ProcessModifyMapValueCommand( const char* command, uint16_t* map )
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Display the usage information for the command processor
+//!
+///////////////////////////////////////////////////////////////////////////////
+static void ProcessUsageDisplay()
+{
+    HAL_PrintText(
+        "Usage:\r\n"
+        "p\t\t- Program mode\r\n"
+        "r\t\t- Run mode\r\n"
+        "d\t\t- Display current tank input value and output gauge value\r\n"
+        "g <Value>   \t- Output raw gauge value\r\n"
+        "t\t\t- One shot test map the current tank input to the gauge "
+        "output\r\n"
+        "i <Bin> <Value> - Set the input bin number to a specific linear tank "
+        "value\r\n"
+        "o <Bin> <Value> - Set the output bin number to a specific value\r\n"
+        "m\t\t- Display the input and output maps\r\n"
+        "s\t\t- Save input and output maps to persistent storage\r\n"
+        "l\t\t- Load input and output maps from persistent storage\r\n"
+        "u\t\t- This usage information\r\n" );
+    HAL_PrintNewline();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Initialise the guage and get it ready to run
 //!
 ///////////////////////////////////////////////////////////////////////////////
@@ -422,6 +447,10 @@ bool ProcessCommand( const char* command )
         break;
     case 'l':
         result = ProcessLoadCommand();
+        break;
+    case 'u':
+        ProcessUsageDisplay();
+        result = true;
         break;
 
     default:

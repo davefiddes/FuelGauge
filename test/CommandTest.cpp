@@ -574,3 +574,18 @@ TEST( Command, Initialisation )
     ASSERT_TRUE(
         memcmp( g_outputMap, LinearInverse, sizeof( LinearInverse ) ) == 0 );
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test usage information
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, DisplayUsage )
+{
+    //
+    // Very noddy check of the usage information display
+    //
+    g_output.clear();
+    ASSERT_TRUE( ProcessCommand( "u" ) );
+    ASSERT_EQ( g_output.size(), 1 );
+}

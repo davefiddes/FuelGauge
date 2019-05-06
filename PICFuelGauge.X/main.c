@@ -21,8 +21,8 @@
 
 #include "mcc_generated_files/mcc.h"
 #include <command.h>
-#include <hal.h>
 #include <ctype.h>
+#include <hal.h>
 
 //
 //! Length of our input line buffer
@@ -63,6 +63,12 @@ void main( void )
 
     InitialiseGauge();
 
+    //
+    // Display the usage to reduce future user confusion and we have the flash
+    // space...
+    //
+    ProcessCommand( "u" );
+
     char        rxData;
     char        lineBuffer[ BUFFERLEN ];
     const char* lineBufferBegin = &lineBuffer[ 0 ];
@@ -88,7 +94,7 @@ void main( void )
                 HAL_PrintNewline();
 
                 *bufferPos = '\0';
-                
+
                 //
                 // Process our line buffer as a new command
                 //
