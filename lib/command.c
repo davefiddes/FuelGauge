@@ -208,6 +208,8 @@ static bool ProcessDisplayCommand()
     PrintValue( HAL_GetTankInput() );
     HAL_PrintText( " Gauge: 0x" );
     PrintValue( HAL_GetGaugeOutput() );
+    HAL_PrintText( " Mode: " );
+    HAL_PrintText( IsRunning() ? "Run" : "Program" );
     HAL_PrintNewline();
 
     return true;

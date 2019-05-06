@@ -175,7 +175,8 @@ TEST( Command, InputOutput )
     // Display the current tank and gauge values
     ASSERT_TRUE( ProcessCommand( "d" ) );
     ASSERT_EQ( g_output.size(), 1 );
-    EXPECT_STREQ( g_output[ 0 ].c_str(), "Tank: 0x1234 Gauge: 0x5678" );
+    EXPECT_STREQ(
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Gauge: 0x5678 Mode: Run" );
 
     // Attempt to set the gauge output (this will fail in Run mode)
     ASSERT_FALSE( ProcessCommand( "g 1234" ) );
@@ -183,6 +184,15 @@ TEST( Command, InputOutput )
     // Change to programming mode to test the gauge output
     ASSERT_TRUE( ProcessCommand( "p" ) );
     ASSERT_FALSE( IsRunning() );
+
+    //
+    // Check the display is updated after switching modes
+    //
+    g_output.clear();
+    ASSERT_TRUE( ProcessCommand( "d" ) );
+    ASSERT_EQ( g_output.size(), 1 );
+    EXPECT_STREQ(
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Gauge: 0x5678 Mode: Program" );
 
     // Check that invalid gauge output commands fail
     ASSERT_FALSE( ProcessCommand( "g" ) );
