@@ -26,6 +26,9 @@
 #include <stdint.h>
 #include <xc.h>
 
+//! The number of times we read from the ADC to carry out sample averaging
+#define SAMPLE_COUNT 8
+
 ///////////////////////////////////////////////////////////////////////////////
 //!
 //! \brief  Start and wait for an ADC conversion from the tank input
@@ -35,7 +38,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 uint16_t HAL_GetTankInput()
 {
-    return ADC_GetConversion( tank );
+    uint32_t value = 0;
+
+    for ( uint8_t i = 0; i < SAMPLE_COUNT; i++ )
+    {
+        value = value + ADC_GetConversion( tank );
+    }
+
+    return value / SAMPLE_COUNT;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
