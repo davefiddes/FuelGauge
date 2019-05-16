@@ -4,3 +4,4 @@ build/*
 .vscode/ipch/*
 /PICFuelGauge.X/build/
 /PICFuelGauge.X/dist/
+/hardware/*bak
