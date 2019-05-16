@@ -5,3 +5,5 @@ build/*
 /PICFuelGauge.X/build/
 /PICFuelGauge.X/dist/
 /hardware/*bak
+/hardware/fp-info-cache
+
