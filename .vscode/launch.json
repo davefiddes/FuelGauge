@@ -5,15 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Demo",
-            "type": "gdb",
-            "request": "launch",
-            "target": "./build/demo/FuelGaugeDemo",
-            "cwd": "${workspaceRoot}",
-            "valuesFormatting": "parseText"
-        },
-        {
-            "name": "Debug Test",
+            "name": "Debug",
             "type": "gdb",
             "request": "launch",
             "target": "./build/test/FuelGaugeTest",
