@@ -3,8 +3,8 @@ file(GLOB SRCS *.cpp)
 add_executable(FuelGaugeTest ${SRCS})
 
 # Generic Google Test libraries
-find_package(Threads)
-target_link_libraries(FuelGaugeTest PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+find_package(Threads REQUIRED)
+target_link_libraries(FuelGaugeTest PUBLIC Threads::Threads)
 target_link_libraries(FuelGaugeTest PUBLIC gtest)
 
 # Extra linking for the project.
