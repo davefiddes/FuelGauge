@@ -1,4 +1,5 @@
 build/*
+ubuntu-build/*
 *.gch
 *.bak
 .vscode/ipch/*
