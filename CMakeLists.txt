@@ -19,4 +19,5 @@ endif()
 add_subdirectory (lib)
 
 # The unit tests
+enable_testing()
 add_subdirectory (test)
