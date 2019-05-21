@@ -30,6 +30,8 @@ The project contains the full Kicad schematics and a PCB layout designed to fit 
 
 ## Software
 
+[![Build Status](https://travis-ci.org/davefiddes/FuelGauge.svg?branch=master)](https://travis-ci.org/davefiddes/FuelGauge)
+
 The gauge is implemented in C as a platform neutral core with a small hardware abstraction layer for the MCU. A full set of unit tests is provided for the core allowing easy testing and debugging to be carried out on a PC before building for the MCU. The MCU firmware is built using the Microchip MPLAB X IDE.
 
  The gauge has two 9 bin maps that allow fine grained mapping of:
