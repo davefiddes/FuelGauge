@@ -77,6 +77,16 @@ void HAL_SetGaugeOutput( uint16_t value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Turn on or off the Low Fuel Warning light
+//!
+///////////////////////////////////////////////////////////////////////////////
+void HAL_SetLowFuelLight( bool newState )
+{
+    lowFuel_LAT = newState;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Send the text to the USART
 //!
 ///////////////////////////////////////////////////////////////////////////////
@@ -109,7 +119,7 @@ void HAL_PrintNewline( void )
 //! \note   The map values are stored in big-endian order
 //!
 ///////////////////////////////////////////////////////////////////////////////
-void HAL_LoadMaps( uint16_t* input, uint16_t* output )
+void HAL_LoadMaps( uint16_t* input, uint16_t* output, uint16_t* lowFuelLevel )
 {
     uint16_t value;
     uint8_t  addr = 0;
@@ -133,6 +143,15 @@ void HAL_LoadMaps( uint16_t* input, uint16_t* output )
 
         output[ i ] = value;
     }
+
+    //
+    // Load in the single low fuel setting after the maps
+    //
+    value = DATAEE_ReadByte( addr ) << 8;
+    addr++;
+    value += DATAEE_ReadByte( addr );
+    addr++;
+    *lowFuelLevel = value;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,7 +161,10 @@ void HAL_LoadMaps( uint16_t* input, uint16_t* output )
 //! \note   The map values are stored in big-endian order
 //!
 ///////////////////////////////////////////////////////////////////////////////
-void HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
+void HAL_SaveMaps(
+    const uint16_t* input,
+    const uint16_t* output,
+    uint16_t        lowFuelLevel )
 {
     uint16_t value;
     uint8_t  addr = 0;
@@ -166,4 +188,14 @@ void HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
         DATAEE_WriteByte( addr, value & 0xFF );
         addr++;
     }
+
+    //
+    // Save out the single low fuel setting after the maps
+    //
+    value = lowFuelLevel;
+
+    DATAEE_WriteByte( addr, value >> 8 );
+    addr++;
+    DATAEE_WriteByte( addr, value & 0xFF );
+    addr++;
 }

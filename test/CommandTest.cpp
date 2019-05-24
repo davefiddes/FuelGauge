@@ -51,7 +51,7 @@ uint16_t g_gauge;
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
-//! \brief  Return the last output value of the guage
+//! \brief  Return the last output value of the gauge
 //!
 ///////////////////////////////////////////////////////////////////////////////
 uint16_t HAL_GetGaugeOutput()
@@ -67,6 +67,19 @@ uint16_t HAL_GetGaugeOutput()
 void HAL_SetGaugeOutput( uint16_t value )
 {
     g_gauge = value;
+}
+
+//! Low fuel warning light state
+bool g_lowFuelState;
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Set the state of the low fuel warning light
+//!
+///////////////////////////////////////////////////////////////////////////////
+void HAL_SetLowFuelLight( bool newState )
+{
+    g_lowFuelState = newState;
 }
 
 //! output buffer used to accumulate lines of character output
@@ -100,15 +113,19 @@ uint16_t g_inputMap[ MAPSIZE ];
 //! A test linear actual tank value to gauge output value map
 uint16_t g_outputMap[ MAPSIZE ];
 
+//! Low fuel level setting (treated as part of the map)
+uint16_t g_lowFuelLevel;
+
 ///////////////////////////////////////////////////////////////////////////////
 //!
 //! \brief  Load our test maps into the fuel gauge processor
 //!
 ///////////////////////////////////////////////////////////////////////////////
-void HAL_LoadMaps( uint16_t* input, uint16_t* output )
+void HAL_LoadMaps( uint16_t* input, uint16_t* output, uint16_t* lowFuelLevel )
 {
     memcpy( input, &g_inputMap, sizeof( g_inputMap ) );
     memcpy( output, &g_outputMap, sizeof( g_outputMap ) );
+    *lowFuelLevel = g_lowFuelLevel;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -116,10 +133,14 @@ void HAL_LoadMaps( uint16_t* input, uint16_t* output )
 //! \brief  Save the supplied maps into our test maps for checking
 //!
 ///////////////////////////////////////////////////////////////////////////////
-void HAL_SaveMaps( const uint16_t* input, const uint16_t* output )
+void HAL_SaveMaps(
+    const uint16_t* input,
+    const uint16_t* output,
+    uint16_t        lowFuelLevel )
 {
     memcpy( &g_inputMap, input, sizeof( g_inputMap ) );
     memcpy( &g_outputMap, output, sizeof( g_outputMap ) );
+    g_lowFuelLevel = lowFuelLevel;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -400,6 +421,7 @@ TEST( Command, MapDisplay )
     //
     memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
     memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+    g_lowFuelLevel = 0x1234;
 
     //
     // Load in our maps
@@ -415,7 +437,7 @@ TEST( Command, MapDisplay )
     //
     // Verify the output matches the two maps we loaded
     //
-    ASSERT_EQ( g_output.size(), 18 );
+    ASSERT_EQ( g_output.size(), 19 );
     EXPECT_STREQ( g_output[ 0 ].c_str(), "Input[0] : 0x0000" );
     EXPECT_STREQ( g_output[ 1 ].c_str(), "Input[1] : 0x2000" );
     EXPECT_STREQ( g_output[ 2 ].c_str(), "Input[2] : 0x4000" );
@@ -435,6 +457,7 @@ TEST( Command, MapDisplay )
     EXPECT_STREQ( g_output[ 15 ].c_str(), "Output[6] : 0x4000" );
     EXPECT_STREQ( g_output[ 16 ].c_str(), "Output[7] : 0x2000" );
     EXPECT_STREQ( g_output[ 17 ].c_str(), "Output[8] : 0x0000" );
+    EXPECT_STREQ( g_output[ 18 ].c_str(), "Low Fuel Level : 0x1234" );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -588,4 +611,113 @@ TEST( Command, DisplayUsage )
     g_output.clear();
     ASSERT_TRUE( ProcessCommand( "u" ) );
     ASSERT_EQ( g_output.size(), 1 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test low fuel warning
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, LowFuelWarning )
+{
+    //
+    // Clean up the output
+    //
+    g_output.clear();
+
+    //
+    // Cue up some maps and a low fuel warning level
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+    g_lowFuelLevel = 0x1000;
+
+    //
+    // Load in our maps successfully on initialisation
+    //
+    g_lowFuelState = false;
+    InitialiseGauge();
+    ASSERT_TRUE( IsRunning() );
+
+    //
+    // Check that the low fuel state is off after initialisation
+    //
+    EXPECT_FALSE( g_lowFuelState );
+
+    //
+    // Run the gauge with a normal fuel level and check the light doesn't come
+    // on
+    //
+    g_tank = 0x1234;
+    RunGauge();
+    EXPECT_EQ( g_gauge, 0xedcb );
+    EXPECT_TRUE( g_output.empty() );
+    EXPECT_FALSE( g_lowFuelState );
+
+    //
+    // Lower the fuel level and verify that the light comes on
+    //
+    g_tank = 0x0123;
+    RunGauge();
+    EXPECT_EQ( g_gauge, 0xfedc );
+    EXPECT_TRUE( g_output.empty() );
+    EXPECT_TRUE( g_lowFuelState );
+
+    //
+    // Raise the fuel gauge and verify the light goes off
+    //
+    g_tank = 0xC100;
+    RunGauge();
+    EXPECT_EQ( g_gauge, 0x3f00 );
+    EXPECT_TRUE( g_output.empty() );
+    EXPECT_FALSE( g_lowFuelState );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test low fuel configuration
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, LowFuelLevelConfiguration )
+{
+    //
+    // Cue up some maps and a low fuel warning level
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+    g_lowFuelLevel = 0x1000;
+
+    //
+    // Load in our maps successfully on initialisation
+    //
+    g_lowFuelState = false;
+    InitialiseGauge();
+    ASSERT_TRUE( IsRunning() );
+
+    // Attempt to set the low fuel level (this will fail in Run mode)
+    ASSERT_FALSE( ProcessCommand( "f 1234" ) );
+
+    // Change to programming mode to set the low fuel level
+    ASSERT_TRUE( ProcessCommand( "p" ) );
+    ASSERT_FALSE( IsRunning() );
+
+    // Check that invalid gauge output commands fail
+    EXPECT_FALSE( ProcessCommand( "f" ) );
+    EXPECT_EQ( g_lowFuelLevel, 0x1000 );
+    EXPECT_FALSE( ProcessCommand( "f " ) );
+    EXPECT_EQ( g_lowFuelLevel, 0x1000 );
+    EXPECT_FALSE( ProcessCommand( "f qwio" ) );
+    EXPECT_EQ( g_lowFuelLevel, 0x1000 );
+
+    // Check that setting the low fuel level works and additional input is
+    // ignored
+    EXPECT_TRUE( ProcessCommand( "f fedc" ) );
+    EXPECT_TRUE( ProcessCommand( "s" ) );
+    EXPECT_EQ( g_lowFuelLevel, 0xfedc );
+    EXPECT_TRUE( ProcessCommand( "f 123456789" ) );
+    EXPECT_TRUE( ProcessCommand( "s" ) );
+    EXPECT_EQ( g_lowFuelLevel, 0x6789 );
+    EXPECT_TRUE( ProcessCommand( "f1234" ) );
+    EXPECT_TRUE( ProcessCommand( "s" ) );
+    EXPECT_EQ( g_lowFuelLevel, 0x1234 );
 }

@@ -36,12 +36,16 @@ extern "C" {
 uint16_t HAL_GetTankInput( void );
 uint16_t HAL_GetGaugeOutput( void );
 void     HAL_SetGaugeOutput( uint16_t value );
+void     HAL_SetLowFuelLight( bool newState );
 
 void HAL_PrintText( const char* text );
 void HAL_PrintNewline( void );
 
-void HAL_LoadMaps( uint16_t* input, uint16_t* output );
-void HAL_SaveMaps( const uint16_t* input, const uint16_t* output );
+void HAL_LoadMaps( uint16_t* input, uint16_t* output, uint16_t* lowFuelLevel );
+void HAL_SaveMaps(
+    const uint16_t* input,
+    const uint16_t* output,
+    uint16_t        lowFuelLevel );
 
 #ifdef __cplusplus // Provide C++ Compatibility
 }

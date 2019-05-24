@@ -51,8 +51,8 @@
 #include "pin_manager.h"
 #include <stdint.h>
 #include <stdbool.h>
-#include "fvr.h"
 #include "epwm.h"
+#include "fvr.h"
 #include "memory.h"
 #include "tmr2.h"
 #include "adc.h"

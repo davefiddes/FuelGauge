@@ -60,9 +60,15 @@ static bool s_running;
 static uint16_t s_inputMap[ MAPSIZE ];
 
 //
-//! Output mapping between a linear actual value and the guage output
+//! Output mapping between a linear actual value and the gauge output
 //
 static uint16_t s_outputMap[ MAPSIZE ];
+
+//
+//! Low fuel warning level - an actual fuel value below this should turn
+//! on the low fuel light
+//
+static uint16_t s_lowFuelLevel;
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
@@ -254,6 +260,8 @@ static bool ProcessMapping( bool logging )
 
     uint16_t actual = MapValue( s_inputMap, input );
 
+    HAL_SetLowFuelLight( actual <= s_lowFuelLevel );
+
     uint16_t output = MapValue( s_outputMap, actual );
 
     HAL_SetGaugeOutput( output );
@@ -279,7 +287,7 @@ static bool ProcessMapping( bool logging )
 ///////////////////////////////////////////////////////////////////////////////
 static bool ProcessLoadCommand()
 {
-    HAL_LoadMaps( s_inputMap, s_outputMap );
+    HAL_LoadMaps( s_inputMap, s_outputMap, &s_lowFuelLevel );
     return true;
 }
 
@@ -290,7 +298,7 @@ static bool ProcessLoadCommand()
 ///////////////////////////////////////////////////////////////////////////////
 static bool ProcessSaveCommand()
 {
-    HAL_SaveMaps( s_inputMap, s_outputMap );
+    HAL_SaveMaps( s_inputMap, s_outputMap, s_lowFuelLevel );
     return true;
 }
 
@@ -318,6 +326,10 @@ static bool ProcessMapDisplayCommand()
         PrintValue( s_outputMap[ i ] );
         HAL_PrintNewline();
     }
+
+    HAL_PrintText( "Low Fuel Level : 0x" );
+    PrintValue( s_lowFuelLevel );
+    HAL_PrintNewline();
 
     return true;
 }
@@ -379,18 +391,47 @@ static void ProcessUsageDisplay()
         "m\t\t- Display the input and output maps\r\n"
         "s\t\t- Save input and output maps to persistent storage\r\n"
         "l\t\t- Load input and output maps from persistent storage\r\n"
-        "u\t\t- This usage information\r\n" );
+        "u\t\t- This usage information\r\n"
+        "f <Value>   \t- Set the low fuel limit\r\n" );
     HAL_PrintNewline();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
-//! \brief  Initialise the guage and get it ready to run
+//! \brief  Set the low fuel level warning level value
+//!
+///////////////////////////////////////////////////////////////////////////////
+static bool ProcessLowFuelLevel( const char* command )
+{
+    //
+    // Fail immediately if we are running
+    //
+    if ( s_running )
+    {
+        return false;
+    }
+
+    uint16_t lowFuelLevel;
+
+    if ( ParseValue( command, &lowFuelLevel ) )
+    {
+        s_lowFuelLevel = lowFuelLevel;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Initialise the gauge and get it ready to run
 //!
 ///////////////////////////////////////////////////////////////////////////////
 void InitialiseGauge()
 {
-    HAL_LoadMaps( s_inputMap, s_outputMap );
+    HAL_LoadMaps( s_inputMap, s_outputMap, &s_lowFuelLevel );
     s_running = true;
 }
 
@@ -452,6 +493,9 @@ bool ProcessCommand( const char* command )
         ProcessUsageDisplay();
         result = true;
         break;
+    case 'f':
+        result = ProcessLowFuelLevel( &command[ 1 ] );
+        break;
 
     default:
         break;
@@ -462,7 +506,7 @@ bool ProcessCommand( const char* command )
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
-//! \brief  Run the guage by reading the tank input, mapping and then changing
+//! \brief  Run the gauge by reading the tank input, mapping and then changing
 //!         the output
 //!
 //! This runs the mapping process once before returning. It is envisaged this
