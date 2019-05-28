@@ -721,3 +721,72 @@ TEST( Command, LowFuelLevelConfiguration )
     EXPECT_TRUE( ProcessCommand( "s" ) );
     EXPECT_EQ( g_lowFuelLevel, 0x1234 );
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test streaming of mapping values when the gauge is running
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, ContinuousValueMapping )
+{
+    //
+    // Clear the output log
+    //
+    g_output.clear();
+
+    //
+    // Set the tank input and gauge output to known values
+    //
+    g_tank = 0x1234;
+    g_gauge = 0x5678;
+
+    //
+    // Cue up some maps and start the gauge
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+    InitialiseGauge();
+
+    //
+    // Run the gauge and check we get no output
+    //
+    RunGauge();
+    EXPECT_EQ( g_output.size(), 0 );
+
+    //
+    // Turn on continuous logging
+    //
+    ASSERT_TRUE( ProcessCommand( "c" ) );
+
+    //
+    // Run the gauge a few times and verify the output
+    //
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0xedcb );
+    ASSERT_EQ( g_output.size(), 1 );
+    EXPECT_STREQ(
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb" );
+
+    g_tank = 0x3000;
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0xd000 );
+    ASSERT_EQ( g_output.size(), 2 );
+    EXPECT_STREQ(
+        g_output[ 1 ].c_str(), "Tank: 0x3000 Actual: 0x3000 Gauge: 0xd000" );
+
+    g_tank = 0xc100;
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0x3f00 );
+    ASSERT_EQ( g_output.size(), 3 );
+    EXPECT_STREQ(
+        g_output[ 2 ].c_str(), "Tank: 0xc100 Actual: 0xc100 Gauge: 0x3f00" );
+
+    //
+    // Turn off continuous mode and verify that running is now silent
+    //
+    ASSERT_TRUE( ProcessCommand( "c" ) );
+    g_tank = 0x1234;
+    RunGauge();
+    ASSERT_EQ( g_gauge, 0xedcb );
+    ASSERT_EQ( g_output.size(), 3 );
+}

@@ -28,28 +28,6 @@
 #include <string.h>
 
 //
-// Command grammar:
-//
-//   Command (1 character)
-//   Fields (space separated)
-//
-// Commands:
-//
-// p                - Program mode
-// r                - Run mode
-// d                - Display current tank input value and output gauge value
-// g <Value>        - Output raw gauge value
-// t                - One shot test map the current tank input to the gauge
-//                    output
-// i <Bin> <Value>  - Set the input bin number to a specific linear tank
-//                    value
-// o <Bin> <Value>  - Set the output bin number to a specific value
-// m                - Display the input and output maps
-// s                - Save input and output maps to persistent storage
-// l                - Load input and output maps from persistent storage
-//
-
-//
 //! Flag to indicate whether we are running or programming the gauge
 //
 static bool s_running;
@@ -69,6 +47,12 @@ static uint16_t s_outputMap[ MAPSIZE ];
 //! on the low fuel light
 //
 static uint16_t s_lowFuelLevel;
+
+//
+//! Continuous Mode enables output of values as they are mapped to ease
+//! calibration
+//
+static uint16_t s_continuousMode;
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
@@ -391,8 +375,9 @@ static void ProcessUsageDisplay()
         "m\t\t- Display the input and output maps\r\n"
         "s\t\t- Save input and output maps to persistent storage\r\n"
         "l\t\t- Load input and output maps from persistent storage\r\n"
-        "u\t\t- This usage information\r\n"
-        "f <Value>   \t- Set the low fuel limit\r\n" );
+        "f <Value>   \t- Set the low fuel limit\r\n"
+        "c\t\t- Continuously output values as the gauge runs\r\n"
+        "u\t\t- This usage information\r\n" );
     HAL_PrintNewline();
 }
 
@@ -426,6 +411,17 @@ static bool ProcessLowFuelLevel( const char* command )
 
 ///////////////////////////////////////////////////////////////////////////////
 //!
+//! \brief  Toggle continuous logging of values as they are mapped
+//!
+///////////////////////////////////////////////////////////////////////////////
+static bool ProcessContinuousMode()
+{
+    s_continuousMode = ~s_continuousMode;
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
 //! \brief  Initialise the gauge and get it ready to run
 //!
 ///////////////////////////////////////////////////////////////////////////////
@@ -433,6 +429,7 @@ void InitialiseGauge()
 {
     HAL_LoadMaps( s_inputMap, s_outputMap, &s_lowFuelLevel );
     s_running = true;
+    s_continuousMode = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -496,6 +493,9 @@ bool ProcessCommand( const char* command )
     case 'f':
         result = ProcessLowFuelLevel( &command[ 1 ] );
         break;
+    case 'c':
+        result = ProcessContinuousMode();
+        break;
 
     default:
         break;
@@ -516,11 +516,12 @@ bool ProcessCommand( const char* command )
 void RunGauge( void )
 {
     //
-    // Run the mapping command but with logging turned off
+    // Run the mapping command but with logging controlled by wether we are
+    // in continuous mode or not
     //
     if ( s_running )
     {
-        ProcessMapping( false );
+        ProcessMapping( s_continuousMode );
     }
 }
 
