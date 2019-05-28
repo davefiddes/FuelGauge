@@ -834,9 +834,7 @@ TEST( Command, TankInputValidation )
     EXPECT_TRUE( ProcessCommand("c"));
     EXPECT_FALSE( RunGauge() );
     EXPECT_EQ( g_gauge, 0x5678 );
-    ASSERT_EQ( g_output.size(), 1 );
-    EXPECT_STREQ(
-        g_output[ 0 ].c_str(), "Tank input error" );
+    ASSERT_EQ( g_output.size(), 0 );
 
     //
     // Set the tank input to a valid value and ensure that the output is set
@@ -844,7 +842,7 @@ TEST( Command, TankInputValidation )
     g_tank = 0x1234;
     EXPECT_TRUE( RunGauge() );
     EXPECT_EQ( g_gauge, 0xedcb );
-    ASSERT_EQ( g_output.size(), 2 );
+    ASSERT_EQ( g_output.size(), 1 );
     EXPECT_STREQ(
-        g_output[ 1 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb" );
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb" );
 }
