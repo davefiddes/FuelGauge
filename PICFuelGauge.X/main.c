@@ -54,7 +54,8 @@ void main( void )
     // Disable the Peripheral Interrupts
     // INTERRUPT_PeripheralInterruptDisable();
 
-    HAL_PrintText( "FuelGauge Version Message\r\n\r\n" );
+    HAL_PrintText( "FuelGauge Version " GIT_VERSION "\r\n\r\n"
+                   "Press \"u\" for usage\r\n\r\n" );
 
     //
     // Start the PWM output
@@ -62,12 +63,6 @@ void main( void )
     TMR2_StartTimer();
 
     InitialiseGauge();
-
-    //
-    // Display the usage to reduce future user confusion and we have the flash
-    // space...
-    //
-    ProcessCommand( "u" );
 
     char        rxData;
     char        lineBuffer[ BUFFERLEN ];

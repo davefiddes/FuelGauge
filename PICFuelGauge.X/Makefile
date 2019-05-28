@@ -55,7 +55,8 @@ build: .build-post
 
 .build-pre:
 # Add your pre 'build' code here...
-
+GIT_VERSION := ${shell git describe --abbrev=6 --dirty --always --tags}
+	
 .build-post: .build-impl
 # Add your post 'build' code here...
 
