@@ -45,7 +45,21 @@ uint16_t HAL_GetTankInput()
         value = value + ADC_GetConversion( tank );
     }
 
-    return value / SAMPLE_COUNT;
+    value = value / SAMPLE_COUNT;
+
+    //
+    // If we consistently indicate full-scale on the ADC this means we have
+    // an open input or another error - force this to be the error value
+    //
+    if ( value == 0xffc0 )
+    {
+        return TANK_INPUT_ERROR;
+    }
+    else
+    {
+
+        return value;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

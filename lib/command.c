@@ -242,6 +242,17 @@ static bool ProcessMapping( bool logging )
 {
     uint16_t input = HAL_GetTankInput();
 
+    //
+    // Check to see if there is an error reading the tank input
+    //
+    if ( input == TANK_INPUT_ERROR )
+    {
+        return false;
+    }
+
+    //
+    // Map the value normally
+    //
     uint16_t actual = MapValue( s_inputMap, input );
 
     HAL_SetLowFuelLight( actual <= s_lowFuelLevel );
@@ -513,7 +524,7 @@ bool ProcessCommand( const char* command )
 //! is run periodically from a main loop
 //!
 ///////////////////////////////////////////////////////////////////////////////
-void RunGauge( void )
+bool RunGauge( void )
 {
     //
     // Run the mapping command but with logging controlled by wether we are
@@ -521,7 +532,11 @@ void RunGauge( void )
     //
     if ( s_running )
     {
-        ProcessMapping( s_continuousMode );
+        return ProcessMapping( s_continuousMode );
+    }
+    else
+    {
+        return true;
     }
 }
 

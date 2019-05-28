@@ -29,6 +29,11 @@
 //
 #define BUFFERLEN 20
 
+//
+//! The number of loop iterations we need to flash at approx 1Hz
+//
+#define ERRORFLASHDURATION 1000
+
 ///////////////////////////////////////////////////////////////////////////////
 //!
 //! \brief  Device main loop
@@ -69,6 +74,7 @@ void main( void )
     const char* lineBufferBegin = &lineBuffer[ 0 ];
     const char* lineBufferEnd = lineBufferBegin + BUFFERLEN;
     char*       bufferPos = (char*)lineBufferBegin;
+    int         errorCount;
 
     *bufferPos = '\0';
 
@@ -131,6 +137,42 @@ void main( void )
                 }
             }
         }
-        RunGauge();
+
+        if ( !RunGauge() )
+        {
+            //
+            // If we don't already have an error flash in progress start a
+            // new one
+            //
+            if ( errorCount == 0 )
+            {
+                //
+                // The error flash will have a 50% duty cycle so double the
+                // interations
+                //
+                errorCount = ERRORFLASHDURATION * 2;
+                lowFuel_SetHigh();
+            }
+        }
+
+        //
+        // If we have an outstanding error take care of flashing the low fuel
+        // LED
+        //
+        if ( errorCount > 0 )
+        {
+            if ( errorCount == ERRORFLASHDURATION )
+            {
+                lowFuel_SetLow();
+            }
+            errorCount--;
+
+            //
+            // Wait for 1ms which should be enough to keep the main loop
+            // responsive but not require huge numbers of iterations to build
+            // longer delays for the error flash
+            //
+            __delay_ms( 1 );
+        }
     }
 }

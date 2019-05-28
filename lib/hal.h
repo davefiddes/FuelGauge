@@ -29,6 +29,11 @@
 #include <xc.h> /* XC8 General Include File */
 #endif
 
+//
+//! This value indicates an error in the tank input
+//
+#define TANK_INPUT_ERROR 0xffff
+
 #ifdef __cplusplus // Provide C++ Compatibility
 extern "C" {
 #endif

@@ -341,22 +341,22 @@ TEST( Command, RunGauge )
     // the map
     //
     g_tank = 0x1234;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0xedca );
     ASSERT_TRUE( g_output.empty() );
 
     g_tank = 0x3000;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0xd000 );
     ASSERT_TRUE( g_output.empty() );
 
     g_tank = 0xC100;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0x3f00 );
     ASSERT_TRUE( g_output.empty() );
 
     g_tank = 0x1234;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0xedca );
     ASSERT_TRUE( g_output.empty() );
 
@@ -365,7 +365,7 @@ TEST( Command, RunGauge )
     //
     ASSERT_TRUE( ProcessCommand( "p" ) );
     g_tank = 0x3000;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0xedca );
     ASSERT_FALSE( IsRunning() );
     ASSERT_TRUE( g_output.empty() );
@@ -649,7 +649,7 @@ TEST( Command, LowFuelWarning )
     // on
     //
     g_tank = 0x1234;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     EXPECT_EQ( g_gauge, 0xedcb );
     EXPECT_TRUE( g_output.empty() );
     EXPECT_FALSE( g_lowFuelState );
@@ -658,7 +658,7 @@ TEST( Command, LowFuelWarning )
     // Lower the fuel level and verify that the light comes on
     //
     g_tank = 0x0123;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     EXPECT_EQ( g_gauge, 0xfedc );
     EXPECT_TRUE( g_output.empty() );
     EXPECT_TRUE( g_lowFuelState );
@@ -667,7 +667,7 @@ TEST( Command, LowFuelWarning )
     // Raise the fuel gauge and verify the light goes off
     //
     g_tank = 0xC100;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     EXPECT_EQ( g_gauge, 0x3f00 );
     EXPECT_TRUE( g_output.empty() );
     EXPECT_FALSE( g_lowFuelState );
@@ -750,7 +750,7 @@ TEST( Command, ContinuousValueMapping )
     //
     // Run the gauge and check we get no output
     //
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     EXPECT_EQ( g_output.size(), 0 );
 
     //
@@ -761,21 +761,21 @@ TEST( Command, ContinuousValueMapping )
     //
     // Run the gauge a few times and verify the output
     //
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0xedcb );
     ASSERT_EQ( g_output.size(), 1 );
     EXPECT_STREQ(
         g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb" );
 
     g_tank = 0x3000;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0xd000 );
     ASSERT_EQ( g_output.size(), 2 );
     EXPECT_STREQ(
         g_output[ 1 ].c_str(), "Tank: 0x3000 Actual: 0x3000 Gauge: 0xd000" );
 
     g_tank = 0xc100;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0x3f00 );
     ASSERT_EQ( g_output.size(), 3 );
     EXPECT_STREQ(
@@ -786,7 +786,65 @@ TEST( Command, ContinuousValueMapping )
     //
     ASSERT_TRUE( ProcessCommand( "c" ) );
     g_tank = 0x1234;
-    RunGauge();
+    EXPECT_TRUE( RunGauge() );
     ASSERT_EQ( g_gauge, 0xedcb );
     ASSERT_EQ( g_output.size(), 3 );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//!
+//! \brief  Test tank input value validation
+//!
+///////////////////////////////////////////////////////////////////////////////
+TEST( Command, TankInputValidation )
+{
+    //
+    // Clear the output log
+    //
+    g_output.clear();
+
+    //
+    // Cue up some maps and start the gauge
+    //
+    memcpy( &g_inputMap, LinearOneToOne, sizeof( g_inputMap ) );
+    memcpy( &g_outputMap, LinearInverse, sizeof( g_outputMap ) );
+    InitialiseGauge();
+
+    //
+    // Set the tank input to a full-scale value than indicates the ADC in out of
+    // range.
+    //
+    g_tank = TANK_INPUT_ERROR;
+
+    //
+    // Assign a value to the gauge that should not change while we have an error
+    //
+    g_gauge = 0x5678;
+
+    //
+    // Run that gauge and check that an error is reported
+    //
+    EXPECT_FALSE( RunGauge() );
+    EXPECT_EQ( g_gauge, 0x5678 );
+    ASSERT_EQ( g_output.size(), 0 );
+
+    //
+    // Turn on continuous logging mode and run again 
+    //
+    EXPECT_TRUE( ProcessCommand("c"));
+    EXPECT_FALSE( RunGauge() );
+    EXPECT_EQ( g_gauge, 0x5678 );
+    ASSERT_EQ( g_output.size(), 1 );
+    EXPECT_STREQ(
+        g_output[ 0 ].c_str(), "Tank input error" );
+
+    //
+    // Set the tank input to a valid value and ensure that the output is set
+    //
+    g_tank = 0x1234;
+    EXPECT_TRUE( RunGauge() );
+    EXPECT_EQ( g_gauge, 0xedcb );
+    ASSERT_EQ( g_output.size(), 2 );
+    EXPECT_STREQ(
+        g_output[ 1 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb" );
 }
