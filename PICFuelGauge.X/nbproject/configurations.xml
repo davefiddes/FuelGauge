@@ -139,7 +139,7 @@
         <property key="additional-options-extend-address" value="false"/>
         <property key="additional-options-trace-type" value=""/>
         <property key="additional-options-use-response-files" value="false"/>
-        <property key="backup-reset-condition-flags" value="false"/>
+        <property key="backup-reset-condition-flags" value="true"/>
         <property key="calibrate-oscillator" value="false"/>
         <property key="calibrate-oscillator-value" value="0x3400"/>
         <property key="clear-bss" value="true"/>

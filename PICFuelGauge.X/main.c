@@ -63,6 +63,16 @@ void main( void )
                    "Press \"u\" for usage\r\n\r\n" );
 
     //
+    // Check to see if we have experienced a watchdog reset.
+    // Note: This needs the -mresetbits compiler option set otherwise this
+    // information is clobbered by the normal start up code
+    //
+    if ( __timeout == 0 )
+    {
+        HAL_PrintText( "Watchdog timeout\r\n\r\n" );
+    }
+
+    //
     // Start the PWM output
     //
     TMR2_StartTimer();
@@ -138,6 +148,9 @@ void main( void )
             }
         }
 
+        //
+        // Run the gauge main loop
+        //
         if ( !RunGauge() )
         {
             //
@@ -174,5 +187,10 @@ void main( void )
             //
             __delay_ms( 1 );
         }
+
+        //
+        // Strobe the watchdog every time round the main loop so we don't reboot
+        //
+        CLRWDT();
     }
 }
