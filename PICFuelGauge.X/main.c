@@ -84,7 +84,7 @@ void main( void )
     const char* lineBufferBegin = &lineBuffer[ 0 ];
     const char* lineBufferEnd = lineBufferBegin + BUFFERLEN;
     char*       bufferPos = (char*)lineBufferBegin;
-    int         errorCount;
+    int         errorCount = 0;
 
     *bufferPos = '\0';
 
