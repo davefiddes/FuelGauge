@@ -22,6 +22,11 @@
 #include <mapper.h>
 #include <stdbool.h>
 
+static const uint16_t LinearFullScale[ MAPSIZE ] = { 0x0000, 0x2000, 0x4000,
+                                              0x6000, 0x8000, 0xA000,
+                                              0xC000, 0xE000, 0xFFFF };
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //!
 //! \brief  Map a value using the supplied map bins
@@ -33,22 +38,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 uint16_t MapValue( const uint16_t* map, uint16_t value )
 {
-    uint8_t  lowerBin = value >> 13;
-    uint8_t  upperBin = lowerBin + 1;
-    uint16_t lowerValue = value & 0xE000;
-
-    //
-    // Use uint32_t values to differences to avoid overflowing a uin16_t when
-    // multiplying on an 8-bit PIC
-    //
-    uint32_t valueDiff = value - lowerValue;
-    uint32_t binDiff = map[ upperBin ] - map[ lowerBin ];
-
-    uint32_t output = valueDiff * binDiff;
-
-    output = map[ lowerBin ] + ( output >> 13 );
-
-    return (uint16_t)output;
+    return MapInputValue( value, LinearFullScale, map );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

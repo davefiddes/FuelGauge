@@ -269,10 +269,10 @@ TEST( Command, OneShotValueMapping )
     // Try a one-shot mapping
     //
     ASSERT_TRUE( ProcessCommand( "t" ) );
-    ASSERT_EQ( g_gauge, 0xedcb );
+    ASSERT_EQ( g_gauge, 0xedcc );
     ASSERT_EQ( g_output.size(), 1 );
     EXPECT_STREQ(
-        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb" );
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcc" );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -305,10 +305,10 @@ TEST( Command, OneShotValueMappingReverse )
     // distortion in the upper bin of the one to one map
     //
     ASSERT_TRUE( ProcessCommand( "t" ) );
-    ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_EQ( g_gauge, 0xedcc );
     ASSERT_EQ( g_output.size(), 1 );
     EXPECT_STREQ(
-        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0xedcb Gauge: 0xedca" );
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0xedcc Gauge: 0xedcc" );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -342,7 +342,7 @@ TEST( Command, RunGauge )
     //
     g_tank = 0x1234;
     EXPECT_TRUE( RunGauge() );
-    ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_EQ( g_gauge, 0xedcc );
     ASSERT_TRUE( g_output.empty() );
 
     g_tank = 0x3000;
@@ -357,7 +357,7 @@ TEST( Command, RunGauge )
 
     g_tank = 0x1234;
     EXPECT_TRUE( RunGauge() );
-    ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_EQ( g_gauge, 0xedcc );
     ASSERT_TRUE( g_output.empty() );
 
     //
@@ -366,7 +366,7 @@ TEST( Command, RunGauge )
     ASSERT_TRUE( ProcessCommand( "p" ) );
     g_tank = 0x3000;
     EXPECT_TRUE( RunGauge() );
-    ASSERT_EQ( g_gauge, 0xedca );
+    ASSERT_EQ( g_gauge, 0xedcc );
     ASSERT_FALSE( IsRunning() );
     ASSERT_TRUE( g_output.empty() );
 }
@@ -650,7 +650,7 @@ TEST( Command, LowFuelWarning )
     //
     g_tank = 0x1234;
     EXPECT_TRUE( RunGauge() );
-    EXPECT_EQ( g_gauge, 0xedcb );
+    EXPECT_EQ( g_gauge, 0xedcc );
     EXPECT_TRUE( g_output.empty() );
     EXPECT_FALSE( g_lowFuelState );
 
@@ -659,7 +659,7 @@ TEST( Command, LowFuelWarning )
     //
     g_tank = 0x0123;
     EXPECT_TRUE( RunGauge() );
-    EXPECT_EQ( g_gauge, 0xfedc );
+    EXPECT_EQ( g_gauge, 0xfedd );
     EXPECT_TRUE( g_output.empty() );
     EXPECT_TRUE( g_lowFuelState );
 
@@ -762,10 +762,10 @@ TEST( Command, ContinuousValueMapping )
     // Run the gauge a few times and verify the output
     //
     EXPECT_TRUE( RunGauge() );
-    ASSERT_EQ( g_gauge, 0xedcb );
+    ASSERT_EQ( g_gauge, 0xedcc );
     ASSERT_EQ( g_output.size(), 1 );
     EXPECT_STREQ(
-        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb" );
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcc" );
 
     g_tank = 0x3000;
     EXPECT_TRUE( RunGauge() );
@@ -787,7 +787,7 @@ TEST( Command, ContinuousValueMapping )
     ASSERT_TRUE( ProcessCommand( "c" ) );
     g_tank = 0x1234;
     EXPECT_TRUE( RunGauge() );
-    ASSERT_EQ( g_gauge, 0xedcb );
+    ASSERT_EQ( g_gauge, 0xedcc );
     ASSERT_EQ( g_output.size(), 3 );
 }
 
@@ -841,8 +841,8 @@ TEST( Command, TankInputValidation )
     //
     g_tank = 0x1234;
     EXPECT_TRUE( RunGauge() );
-    EXPECT_EQ( g_gauge, 0xedcb );
+    EXPECT_EQ( g_gauge, 0xedcc );
     ASSERT_EQ( g_output.size(), 1 );
     EXPECT_STREQ(
-        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcb" );
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0x1234 Gauge: 0xedcc" );
 }

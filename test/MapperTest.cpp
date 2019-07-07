@@ -37,12 +37,9 @@ TEST( Mapper, LinearOneToOne )
     ASSERT_EQ( MapValue( LinearOneToOne, 0x3000 ), 0x3000 );
     ASSERT_EQ( MapValue( LinearOneToOne, 0x8000 ), 0x8000 );
     ASSERT_EQ( MapValue( LinearOneToOne, 0x0001 ), 0x0001 );
-    ASSERT_EQ(
-        MapValue( LinearOneToOne, 0xFFFF ),
-        0xFFFF - 1 ); // Fudge because we can't have 0x10000 in a 16-bit value
+    ASSERT_EQ( MapValue( LinearOneToOne, 0xFFFF ), 0xFFFF );
     ASSERT_EQ( MapValue( LinearOneToOne, 0xC100 ), 0xC100 );
-    ASSERT_EQ(
-        MapValue( LinearOneToOne, 0xF000 ), 0xF000 - 1 ); // Another fudge
+    ASSERT_EQ( MapValue( LinearOneToOne, 0xF000 ), 0xF000 );
 }
 
 const uint16_t LinearHalf[ MAPSIZE ] = { 0x0000, 0x1000, 0x2000, 0x3000, 0x4000,
@@ -58,7 +55,7 @@ TEST( Mapper, LinearHalf )
     ASSERT_EQ( MapValue( LinearHalf, 0x8000 ), 0x4000 );
     ASSERT_EQ( MapValue( LinearHalf, 0x0001 ), 0x0000 );
     ASSERT_EQ( MapValue( LinearHalf, 0x0002 ), 0x0001 );
-    ASSERT_EQ( MapValue( LinearHalf, 0xFFFF ), 0x7FFF );
+    ASSERT_EQ( MapValue( LinearHalf, 0xFFFF ), 0x8000 );
     ASSERT_EQ( MapValue( LinearHalf, 0xC100 ), 0x6080 );
     ASSERT_EQ( MapValue( LinearHalf, 0xF000 ), 0x7800 );
 }
