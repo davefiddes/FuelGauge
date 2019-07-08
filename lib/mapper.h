@@ -34,8 +34,7 @@
 extern "C" {
 #endif
 
-uint16_t MapValue( const uint16_t* map, uint16_t value );
-uint16_t MapInputValue(
+uint16_t MapValue(
     uint16_t        value,
     const uint16_t* inputMap,
     const uint16_t* outputMap );

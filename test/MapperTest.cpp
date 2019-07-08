@@ -31,15 +31,15 @@ const uint16_t LinearOneToOne[ MAPSIZE ] = { 0x0000, 0x2000, 0x4000,
 // Check that mapping works with a simple linear map
 TEST( Mapper, LinearOneToOne )
 {
-    ASSERT_EQ( MapValue( LinearOneToOne, 0x0000 ), 0x0000 );
-    ASSERT_EQ( MapValue( LinearOneToOne, 0x2000 ), 0x2000 );
-    ASSERT_EQ( MapValue( LinearOneToOne, 0x1000 ), 0x1000 );
-    ASSERT_EQ( MapValue( LinearOneToOne, 0x3000 ), 0x3000 );
-    ASSERT_EQ( MapValue( LinearOneToOne, 0x8000 ), 0x8000 );
-    ASSERT_EQ( MapValue( LinearOneToOne, 0x0001 ), 0x0001 );
-    ASSERT_EQ( MapValue( LinearOneToOne, 0xFFFF ), 0xFFFF );
-    ASSERT_EQ( MapValue( LinearOneToOne, 0xC100 ), 0xC100 );
-    ASSERT_EQ( MapValue( LinearOneToOne, 0xF000 ), 0xF000 );
+    ASSERT_EQ( MapValue( 0x0000, LinearOneToOne, LinearOneToOne ), 0x0000 );
+    ASSERT_EQ( MapValue( 0x2000, LinearOneToOne, LinearOneToOne ), 0x2000 );
+    ASSERT_EQ( MapValue( 0x1000, LinearOneToOne, LinearOneToOne ), 0x1000 );
+    ASSERT_EQ( MapValue( 0x3000, LinearOneToOne, LinearOneToOne ), 0x3000 );
+    ASSERT_EQ( MapValue( 0x8000, LinearOneToOne, LinearOneToOne ), 0x8000 );
+    ASSERT_EQ( MapValue( 0x0001, LinearOneToOne, LinearOneToOne ), 0x0001 );
+    ASSERT_EQ( MapValue( 0xFFFF, LinearOneToOne, LinearOneToOne ), 0xFFFF );
+    ASSERT_EQ( MapValue( 0xC100, LinearOneToOne, LinearOneToOne ), 0xC100 );
+    ASSERT_EQ( MapValue( 0xF000, LinearOneToOne, LinearOneToOne ), 0xF000 );
 }
 
 const uint16_t LinearHalf[ MAPSIZE ] = { 0x0000, 0x1000, 0x2000, 0x3000, 0x4000,
@@ -48,14 +48,14 @@ const uint16_t LinearHalf[ MAPSIZE ] = { 0x0000, 0x1000, 0x2000, 0x3000, 0x4000,
 // Check that mapping works with a simple linear map
 TEST( Mapper, LinearHalf )
 {
-    ASSERT_EQ( MapValue( LinearHalf, 0x0000 ), 0x0000 );
-    ASSERT_EQ( MapValue( LinearHalf, 0x2000 ), 0x1000 );
-    ASSERT_EQ( MapValue( LinearHalf, 0x1000 ), 0x0800 );
-    ASSERT_EQ( MapValue( LinearHalf, 0x3000 ), 0x1800 );
-    ASSERT_EQ( MapValue( LinearHalf, 0x8000 ), 0x4000 );
-    ASSERT_EQ( MapValue( LinearHalf, 0x0001 ), 0x0000 );
-    ASSERT_EQ( MapValue( LinearHalf, 0x0002 ), 0x0001 );
-    ASSERT_EQ( MapValue( LinearHalf, 0xFFFF ), 0x8000 );
-    ASSERT_EQ( MapValue( LinearHalf, 0xC100 ), 0x6080 );
-    ASSERT_EQ( MapValue( LinearHalf, 0xF000 ), 0x7800 );
+    ASSERT_EQ( MapValue( 0x0000, LinearOneToOne, LinearHalf ), 0x0000 );
+    ASSERT_EQ( MapValue( 0x2000, LinearOneToOne, LinearHalf ), 0x1000 );
+    ASSERT_EQ( MapValue( 0x1000, LinearOneToOne, LinearHalf ), 0x0800 );
+    ASSERT_EQ( MapValue( 0x3000, LinearOneToOne, LinearHalf ), 0x1800 );
+    ASSERT_EQ( MapValue( 0x8000, LinearOneToOne, LinearHalf ), 0x4000 );
+    ASSERT_EQ( MapValue( 0x0001, LinearOneToOne, LinearHalf ), 0x0000 );
+    ASSERT_EQ( MapValue( 0x0002, LinearOneToOne, LinearHalf ), 0x0001 );
+    ASSERT_EQ( MapValue( 0xFFFF, LinearOneToOne, LinearHalf ), 0x8000 );
+    ASSERT_EQ( MapValue( 0xC100, LinearOneToOne, LinearHalf ), 0x6080 );
+    ASSERT_EQ( MapValue( 0xF000, LinearOneToOne, LinearHalf ), 0x7800 );
 }

@@ -305,10 +305,10 @@ TEST( Command, OneShotValueMappingReverse )
     // distortion in the upper bin of the one to one map
     //
     ASSERT_TRUE( ProcessCommand( "t" ) );
-    ASSERT_EQ( g_gauge, 0xedcc );
+    ASSERT_EQ( g_gauge, 0xedcb );
     ASSERT_EQ( g_output.size(), 1 );
     EXPECT_STREQ(
-        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0xedcc Gauge: 0xedcc" );
+        g_output[ 0 ].c_str(), "Tank: 0x1234 Actual: 0xedcb Gauge: 0xedcb" );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -342,7 +342,7 @@ TEST( Command, RunGauge )
     //
     g_tank = 0x1234;
     EXPECT_TRUE( RunGauge() );
-    ASSERT_EQ( g_gauge, 0xedcc );
+    ASSERT_EQ( g_gauge, 0xedcb );
     ASSERT_TRUE( g_output.empty() );
 
     g_tank = 0x3000;
@@ -357,7 +357,7 @@ TEST( Command, RunGauge )
 
     g_tank = 0x1234;
     EXPECT_TRUE( RunGauge() );
-    ASSERT_EQ( g_gauge, 0xedcc );
+    ASSERT_EQ( g_gauge, 0xedcb );
     ASSERT_TRUE( g_output.empty() );
 
     //
@@ -366,7 +366,7 @@ TEST( Command, RunGauge )
     ASSERT_TRUE( ProcessCommand( "p" ) );
     g_tank = 0x3000;
     EXPECT_TRUE( RunGauge() );
-    ASSERT_EQ( g_gauge, 0xedcc );
+    ASSERT_EQ( g_gauge, 0xedcb );
     ASSERT_FALSE( IsRunning() );
     ASSERT_TRUE( g_output.empty() );
 }

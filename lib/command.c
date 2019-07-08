@@ -233,6 +233,14 @@ static bool ProcessGaugeOutputCommand( const char* command )
     }
 }
 
+//!
+//! \brief  A constant map that can be used as a map which transforms a value to
+//! or from a full scale uint16t_6
+//!
+const uint16_t LinearFullScale[ MAPSIZE ] = { 0x0000, 0x2000, 0x4000,
+                                              0x6000, 0x8000, 0xA000,
+                                              0xC000, 0xE000, 0xFFFF };
+
 ///////////////////////////////////////////////////////////////////////////////
 //!
 //! \brief  Run a one-shot mapping of the current tank input to gauge output
@@ -253,11 +261,11 @@ static bool ProcessMapping( bool logging )
     //
     // Map the value normally
     //
-    uint16_t actual = MapValue( s_inputMap, input );
+    uint16_t actual = MapValue( input, s_inputMap, LinearFullScale );
 
     HAL_SetLowFuelLight( actual <= s_lowFuelLevel );
 
-    uint16_t output = MapValue( s_outputMap, actual );
+    uint16_t output = MapValue( actual, LinearFullScale, s_outputMap );
 
     HAL_SetGaugeOutput( output );
 

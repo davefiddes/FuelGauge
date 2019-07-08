@@ -22,25 +22,6 @@
 #include <mapper.h>
 #include <stdbool.h>
 
-static const uint16_t LinearFullScale[ MAPSIZE ] = { 0x0000, 0x2000, 0x4000,
-                                              0x6000, 0x8000, 0xA000,
-                                              0xC000, 0xE000, 0xFFFF };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//!
-//! \brief  Map a value using the supplied map bins
-//!
-//! Map a 16-bit full-scale value to a 16-bit. The top 3 bits in the value
-//! identify which bins are used to interpolate between.
-//! It is assumed that map is not NULL and has 9 bins
-//!
-///////////////////////////////////////////////////////////////////////////////
-uint16_t MapValue( const uint16_t* map, uint16_t value )
-{
-    return MapInputValue( value, LinearFullScale, map );
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //!
 //! \brief  Interpolate between two map bins
@@ -200,7 +181,7 @@ static uint16_t MapInputValueDecreasing(
 //! between the values. It is assumed that map is not NULL and has 9 bins
 //!
 ///////////////////////////////////////////////////////////////////////////////
-uint16_t MapInputValue(
+uint16_t MapValue(
     uint16_t        value,
     const uint16_t* inputMap,
     const uint16_t* outputMap )
