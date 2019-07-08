@@ -438,25 +438,25 @@ TEST( Command, MapDisplay )
     // Verify the output matches the two maps we loaded
     //
     ASSERT_EQ( g_output.size(), 19 );
-    EXPECT_STREQ( g_output[ 0 ].c_str(), "Input[0] : 0x0000" );
-    EXPECT_STREQ( g_output[ 1 ].c_str(), "Input[1] : 0x2000" );
-    EXPECT_STREQ( g_output[ 2 ].c_str(), "Input[2] : 0x4000" );
-    EXPECT_STREQ( g_output[ 3 ].c_str(), "Input[3] : 0x6000" );
-    EXPECT_STREQ( g_output[ 4 ].c_str(), "Input[4] : 0x8000" );
-    EXPECT_STREQ( g_output[ 5 ].c_str(), "Input[5] : 0xa000" );
-    EXPECT_STREQ( g_output[ 6 ].c_str(), "Input[6] : 0xc000" );
-    EXPECT_STREQ( g_output[ 7 ].c_str(), "Input[7] : 0xe000" );
-    EXPECT_STREQ( g_output[ 8 ].c_str(), "Input[8] : 0xffff" );
+    EXPECT_STREQ( g_output[ 0 ].c_str(), "Input[0] : 0x0000 : 0x0000" );
+    EXPECT_STREQ( g_output[ 1 ].c_str(), "Input[1] : 0x2000 : 0x2000" );
+    EXPECT_STREQ( g_output[ 2 ].c_str(), "Input[2] : 0x4000 : 0x4000" );
+    EXPECT_STREQ( g_output[ 3 ].c_str(), "Input[3] : 0x6000 : 0x6000" );
+    EXPECT_STREQ( g_output[ 4 ].c_str(), "Input[4] : 0x8000 : 0x8000" );
+    EXPECT_STREQ( g_output[ 5 ].c_str(), "Input[5] : 0xa000 : 0xa000" );
+    EXPECT_STREQ( g_output[ 6 ].c_str(), "Input[6] : 0xc000 : 0xc000" );
+    EXPECT_STREQ( g_output[ 7 ].c_str(), "Input[7] : 0xe000 : 0xe000" );
+    EXPECT_STREQ( g_output[ 8 ].c_str(), "Input[8] : 0xffff : 0xffff" );
 
-    EXPECT_STREQ( g_output[ 9 ].c_str(), "Output[0] : 0xffff" );
-    EXPECT_STREQ( g_output[ 10 ].c_str(), "Output[1] : 0xe000" );
-    EXPECT_STREQ( g_output[ 11 ].c_str(), "Output[2] : 0xc000" );
-    EXPECT_STREQ( g_output[ 12 ].c_str(), "Output[3] : 0xa000" );
-    EXPECT_STREQ( g_output[ 13 ].c_str(), "Output[4] : 0x8000" );
-    EXPECT_STREQ( g_output[ 14 ].c_str(), "Output[5] : 0x6000" );
-    EXPECT_STREQ( g_output[ 15 ].c_str(), "Output[6] : 0x4000" );
-    EXPECT_STREQ( g_output[ 16 ].c_str(), "Output[7] : 0x2000" );
-    EXPECT_STREQ( g_output[ 17 ].c_str(), "Output[8] : 0x0000" );
+    EXPECT_STREQ( g_output[ 9 ].c_str(), "Output[0] : 0x0000 : 0xffff" );
+    EXPECT_STREQ( g_output[ 10 ].c_str(), "Output[1] : 0x2000 : 0xe000" );
+    EXPECT_STREQ( g_output[ 11 ].c_str(), "Output[2] : 0x4000 : 0xc000" );
+    EXPECT_STREQ( g_output[ 12 ].c_str(), "Output[3] : 0x6000 : 0xa000" );
+    EXPECT_STREQ( g_output[ 13 ].c_str(), "Output[4] : 0x8000 : 0x8000" );
+    EXPECT_STREQ( g_output[ 14 ].c_str(), "Output[5] : 0xa000 : 0x6000" );
+    EXPECT_STREQ( g_output[ 15 ].c_str(), "Output[6] : 0xc000 : 0x4000" );
+    EXPECT_STREQ( g_output[ 16 ].c_str(), "Output[7] : 0xe000 : 0x2000" );
+    EXPECT_STREQ( g_output[ 17 ].c_str(), "Output[8] : 0xffff : 0x0000" );
     EXPECT_STREQ( g_output[ 18 ].c_str(), "Low Fuel Level : 0x1234" );
 }
 
@@ -829,9 +829,9 @@ TEST( Command, TankInputValidation )
     ASSERT_EQ( g_output.size(), 0 );
 
     //
-    // Turn on continuous logging mode and run again 
+    // Turn on continuous logging mode and run again
     //
-    EXPECT_TRUE( ProcessCommand("c"));
+    EXPECT_TRUE( ProcessCommand( "c" ) );
     EXPECT_FALSE( RunGauge() );
     EXPECT_EQ( g_gauge, 0x5678 );
     ASSERT_EQ( g_output.size(), 0 );

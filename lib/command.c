@@ -318,6 +318,8 @@ static bool ProcessMapDisplayCommand()
         PrintBin( i );
         HAL_PrintText( "] : 0x" );
         PrintValue( s_inputMap[ i ] );
+        HAL_PrintText( " : 0x" );
+        PrintValue( LinearFullScale[ i ] );
         HAL_PrintNewline();
     }
 
@@ -326,6 +328,8 @@ static bool ProcessMapDisplayCommand()
         HAL_PrintText( "Output[" );
         PrintBin( i );
         HAL_PrintText( "] : 0x" );
+        PrintValue( LinearFullScale[ i ] );
+        HAL_PrintText( " : 0x" );
         PrintValue( s_outputMap[ i ] );
         HAL_PrintNewline();
     }
