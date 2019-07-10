@@ -112,3 +112,23 @@ TEST( InputMapper, LinearInverseHalfOffset )
     EXPECT_EQ(
         MapValue( 0x7800, LinearInverseHalfOffset, LinearFullScale ), 0x7000 );
 }
+
+const uint16_t RealInputMap[ MAPSIZE ] = { 0xbb9f, 0xb6b9, 0xa2e1,
+                                           0x8f39, 0x7abc, 0x667b,
+                                           0x4d7e, 0x2cfc, 0x0bfb };
+
+// Check that mapping works with a real map obtained via tank calibration
+TEST( InputMapper, RealInputMap )
+{
+    // Extra empty tank
+    EXPECT_EQ( MapValue( 0xbbff, RealInputMap, LinearFullScale ), 0x0000 );
+
+    // Empty tank
+    EXPECT_EQ( MapValue( 0xbb9f, RealInputMap, LinearFullScale ), 0x0000 );
+
+    // Full tank
+    EXPECT_EQ( MapValue( 0x0bfb, RealInputMap, LinearFullScale ), 0xffff );
+
+    // Overly full tank
+    EXPECT_EQ( MapValue( 0x0480, RealInputMap, LinearFullScale ), 0xffff );
+}

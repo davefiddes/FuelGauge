@@ -144,7 +144,7 @@ static uint16_t MapInputValueDecreasing(
     bool    found = false;
     while ( !found && lowerBin < MAPSIZE - 1 )
     {
-        if ( value < inputMap[ lowerBin ] && value >= inputMap[ lowerBin + 1 ] )
+        if ( value <= inputMap[ lowerBin ] && value > inputMap[ lowerBin + 1 ] )
         {
             found = true;
         }
