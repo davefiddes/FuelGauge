@@ -37,15 +37,19 @@ static uint16_t InterpolateBinValue(
     const uint16_t* outputMap )
 {
     //
-    // Use int32_t values to differences to avoid overflowing a uin16_t when
+    // Use int32_t values for differences to avoid overflowing a uin16_t when
     // multiplying on an 8-bit PIC
+    //
+    // RHS variables need to be cast to int32_t to ensure calculations are
+    // carried out in 32-bits
     //
     // Signed values are used because for either map the upper bin may have a
     // higher or lower value than the lower bin
     //
-    int32_t valueDiff = value - inputMap[ lowerBin ];
-    int32_t inputBinDiff = inputMap[ upperBin ] - inputMap[ lowerBin ];
-    int32_t outputBinDiff = outputMap[ upperBin ] - outputMap[ lowerBin ];
+    int32_t valueDiff = (int32_t)value - inputMap[ lowerBin ];
+    int32_t inputBinDiff = (int32_t)inputMap[ upperBin ] - inputMap[ lowerBin ];
+    int32_t outputBinDiff =
+        (int32_t)outputMap[ upperBin ] - outputMap[ lowerBin ];
 
     int32_t output = ( valueDiff * outputBinDiff ) / inputBinDiff;
 

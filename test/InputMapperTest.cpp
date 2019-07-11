@@ -126,6 +126,9 @@ TEST( InputMapper, RealInputMap )
     // Empty tank
     EXPECT_EQ( MapValue( 0xbb9f, RealInputMap, LinearFullScale ), 0x0000 );
 
+    // Nearly full tank
+    EXPECT_EQ( MapValue( 0x1a79, RealInputMap, LinearFullScale ), 0xf1f2 );
+
     // Full tank
     EXPECT_EQ( MapValue( 0x0bfb, RealInputMap, LinearFullScale ), 0xffff );
 
