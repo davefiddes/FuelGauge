@@ -5,6 +5,8 @@ ubuntu-build/*
 .vscode/ipch/*
 /PICFuelGauge.X/build/
 /PICFuelGauge.X/dist/
-PICFuelGauge.X/nbproject/private/
+/PICFuelGauge.X/nbproject/private/
+/PICFuelGauge.X/nbproject/Makefile*
+/PICFuelGauge.X/nbproject/Package-default.bash
 /hardware/*bak
 /hardware/fp-info-cache
