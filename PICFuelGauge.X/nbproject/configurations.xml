@@ -103,7 +103,7 @@
         <property key="asmlist" value="true"/>
         <property key="default-bitfield-type" value="true"/>
         <property key="default-char-type" value="true"/>
-        <property key="define-macros" value="GIT_VERSION=\&quot;$(GIT_VERSION)\&quot;"/>
+        <property key="define-macros" value="GIT_VERSION=$(GIT_VERSION)"/>
         <property key="disable-optimizations" value="false"/>
         <property key="extra-include-directories" value="../lib"/>
         <property key="favor-optimization-for" value="-speed,+space"/>

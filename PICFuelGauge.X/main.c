@@ -62,7 +62,8 @@ void main( void )
 //
 // Quote a version string to turn it into a C-string
 //
-#define VERSION_STR( x ) #x
+#define VERSION_STR( x ) VERSION_STR1( x )
+#define VERSION_STR1( x ) #x
 
     HAL_PrintText( "FuelGauge Version " VERSION_STR(
         GIT_VERSION ) "\r\n\r\nPress \"u\" for usage\r\n\r\n" );
