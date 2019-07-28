@@ -10,3 +10,4 @@ ubuntu-build/*
 /PICFuelGauge.X/nbproject/Package-default.bash
 /hardware/*bak
 /hardware/fp-info-cache
+/wiring/*bak
