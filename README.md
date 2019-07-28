@@ -40,7 +40,7 @@ Details:
 
 [![Build Status](https://travis-ci.org/davefiddes/FuelGauge.svg?branch=master)](https://travis-ci.org/davefiddes/FuelGauge)
 
-The gauge is implemented in C as a platform neutral core with a small hardware abstraction layer for the MCU. A full set of unit tests is provided for the core allowing easy testing and debugging to be carried out on a PC before building for the MCU. The MCU firmware is built using the Microchip MPLAB X IDE.
+The gauge is implemented in C as a platform neutral core with a small hardware abstraction layer for the MCU. A full set of unit tests is provided for the core allowing easy testing and debugging to be carried out on a PC before building for the MCU. The MCU firmware is built using the Microchip MPLAB X IDE v5.15 and xc8 v2.05 compiler (Free Version).
 
  The gauge has two 9 bin maps that allow fine grained mapping of:
  * the input resistance to a linear fuel level
@@ -48,10 +48,7 @@ The gauge is implemented in C as a platform neutral core with a small hardware a
 
  The calibration of the two maps is achieved using a serial connection. The core implements a command processor allowing values in each of the maps to be modified and saved to EEPROM. During calibration the gauge output can be tested and the resistance of the fuel sender measured independently.
 
- TODO: 
- * Add details of calibration procedure
- * Configuration commands
- * Software build procedure and requirements
+ The [Calibration And Programming Guide](docs/user-guide.md) details how to set up the fuel gauge which should mostly be a one-time exercise.
 
  ## License
 
