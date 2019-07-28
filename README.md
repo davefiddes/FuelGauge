@@ -22,11 +22,19 @@ The Linear Fuel Gauge box sits between a standard resistance fuel sender and a h
  
 ## Hardware
 
-The gauge is built around a simple 8-pin PIC12F1840 micro-controller. The resistance of the sender is measured using a 10mA current source built from an LM317L regulator. The gauge output is achieved by feeding a PWM signal from the MCU into a high-current MOSFET driver (currents are typically around 100mA for 100%). A simple NPN-transistor driver is provided for low fuel indication (no SW support currently). Configuration of the gauge is achieved with a 3-wire TTL serial connection to the MCU.
+The gauge is built around a simple 8-pin PIC12F1840 micro-controller. The resistance of the sender is measured using a 10mA current source built from an LM317L regulator. The gauge output is achieved by feeding a PWM signal from the MCU into a high-current MOSFET driver (currents are typically around 100mA for 100%). A simple NPN-transistor driver is provided for low fuel indication. Configuration of the gauge is achieved with a 3-wire TTL serial connection to the MCU.
 
 The project contains the full Kicad schematics and a PCB layout designed to fit in a small Hammond Manufacturing 1591ABK ABS plastic case.
 
 ![Fuel Gauge PCB 3D render](docs/FuelGauge-pcb-render.png)
+
+![Fuel Gauge assembled unit](docs/FuelGauge-assembled-board.jpg)
+
+Details:
+ * [Schematics](hardware/FuelGauge.pdf)
+ * [PCB Gerbers](hardware/gerbers/FuelGauge-1.0.zip)
+ * [BOM](docs/BOM.md)
+ * [Example Wiring Harness](wiring/wiring.pdf)
 
 ## Software
 
