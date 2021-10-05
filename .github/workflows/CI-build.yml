@@ -1,0 +1,32 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: build-linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Install build package dependencies
+        run: |
+          # Force gcc-10 to be the default
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 40
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 60
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 40
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 60
+          sudo update-alternatives --config g++
+
+      - name: Build and run unit tests
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build .
+          test/FuelGaugeTest
